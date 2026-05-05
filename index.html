@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGG School | Экосистема</title>
+    <!-- Привязка фавиконки -->
+    <link rel="icon" type="image/png" href="img/logo.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #030303; --lgg-green: #3CCB32; --lgg-blue: #0056D2; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        #main-wrapper {
+            transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), filter 0.6s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.6s ease;
+            transform-origin: center top;
+            min-height: 100vh;
+            background-color: var(--bg);
+            /* Оптимизация анимации для GPU, чтобы не лагало на мобилках */
+            will-change: transform, filter, border-radius;
+        }
+
+        body.overlay-open #main-wrapper {
+            transform: scale(0.95) translateY(10px);
+            filter: blur(8px) brightness(0.5);
+            border-radius: 2rem;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .lgg-card {
+            background: rgba(20, 20, 20, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lgg-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .lgg-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .lgg-card:hover::before { opacity: 1; }
+
+        .overlay {
+            position: fixed;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 50;
+            transition: top 0.6s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.6s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 150px;
+            opacity: 0;
+        }
+        .overlay.active {
+            top: 0;
+            opacity: 1;
+        }
+
+        /* Ползунок для подсказки свайпа на мобилках */
+        .swipe-indicator {
+            display: none;
+            width: 40px;
+            height: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 0 auto 20px auto;
+        }
+        @media (max-width: 768px) {
+            .swipe-indicator { display: block; }
+        }
+
+        .floating-bar {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 0.75rem;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 0.5rem;
+            border-radius: 99px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 90%;
+            max-width: max-content;
+            justify-content: center;
+        }
+
+        .floating-bar:hover {
+            transform: translateX(-50%) scale(1.02);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .text-gradient {
+            background: linear-gradient(180deg, #FFFFFF 0%, #777777 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Десктопные скриншоты */
+        .mockup-img {
+            width: 100%;
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: border-color 0.5s ease;
+        }
+        .mockup-img:hover { border-color: rgba(255,255,255,0.3); }
+        .mockup-img img { width: 100%; height: auto; display: block; transition: transform 0.5s ease; }
+        .mockup-img:hover img { transform: scale(1.02); }
+
+        /* СПЕЦИАЛЬНЫЙ КОНТЕЙНЕР ДЛЯ МОБИЛЬНЫХ СКРИНШОТОВ */
+        .mobile-mockup-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9 / 18;
+            background: #111;
+            border: 5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            margin: 0 auto;
+            max-width: 300px;
+        }
+
+        .mobile-mockup-frame img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: scale(1.4);
+            transition: transform 0.3s ease;
+        }
+        .mobile-mockup-frame:hover img { transform: scale(1.45); }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- ЛОГОТИП С БЕЛЫМ ФОНОМ ДЛЯ КОНТРАСТА -->
+    <div class="absolute top-6 left-6 md:top-10 md:left-10 z-50 flex items-center gap-3 cursor-pointer transition-transform hover:scale-105">
+        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white flex items-center justify-center shadow-xl overflow-hidden p-1">
+            <img src="img/logo.png" alt="LGG Logo" class="w-full h-full object-contain">
+        </div>
+        <span class="font-bold text-xl md:text-2xl tracking-widest text-white">LGG<span class="text-[var(--lgg-blue)]">.</span></span>
+    </div>
+
+    <div id="main-wrapper">
+        <main class="max-w-7xl mx-auto px-4 md:px-6 pt-24 md:pt-32 pb-40 md:pb-32">
+
+            <header class="mb-16 md:mb-24 text-center reveal active flex flex-col items-center">
+
+                <!-- БЕЙДЖ ДОВЕРИЯ / СРОЧНОСТИ -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6 md:mb-8 backdrop-blur-sm">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--lgg-green)] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[var(--lgg-green)]"></span>
+                    </span>
+                    <span class="text-xs md:text-sm font-medium text-gray-300">40+ учеников • Места на этот месяц ограничены</span>
+                </div>
+
+                <h1 class="text-5xl md:text-[90px] font-black text-gradient tracking-tighter mb-4 md:mb-8 leading-none">
+                    Система, которая<br>даёт результат.
+                </h1>
+                <p class="text-gray-400 text-base md:text-xl font-light">Нажмите на карточку, чтобы изучить инструменты.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+
+                <div onclick="openOverlay('buildin')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3 md:mb-4">
+                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[var(--lgg-green)] animate-pulse"></div>
+                            <span class="text-[var(--lgg-green)] font-bold text-[10px] md:text-xs uppercase tracking-widest">База знаний</span>
+                        </div>
+                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">Личный кабинет</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Buildin: расписание, конспекты и загрузка домашек без хаоса в чатах.</p>
+                </div>
+
+                <div onclick="openOverlay('stepik')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal" style="transition-delay: 50ms;">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3 md:mb-4">
+                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[var(--lgg-blue)]"></div>
+                            <span class="text-[var(--lgg-blue)] font-bold text-[10px] md:text-xs uppercase tracking-widest">Практика</span>
+                        </div>
+                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">Материалы и тесты</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Специально разработанные нами материалы и тесты с мгновенной проверкой и статистикой.</p>
+                </div>
+
+                <div onclick="openOverlay('bot')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal" style="transition-delay: 100ms;">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3 md:mb-4">
+                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-blue-400"></div>
+                            <span class="text-blue-400 font-bold text-[10px] md:text-xs uppercase tracking-widest">Ассистент</span>
+                        </div>
+                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">VK Бот</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Быстрая запись, напоминания за 20 минут до урока и удобная связь родитель-ребёнок.</p>
+                </div>
+
+                <div onclick="openOverlay('vk')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal" style="transition-delay: 150ms;">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3 md:mb-4">
+                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-gray-400"></div>
+                            <span class="text-gray-300 font-bold text-[10px] md:text-xs uppercase tracking-widest">Комьюнити</span>
+                        </div>
+                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">База файлов</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Отзывы учеников и авторские материалы для ОГЭ/ЕГЭ в нашем ВК-канале и сообществе.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ПЛАВАЮЩИЙ БАР (Оптимизирован для конверсии) -->
+    <div class="floating-bar">
+        <a href="https://vk.me/lggmathnn" target="_blank" class="px-6 md:px-8 py-3 text-sm md:text-base bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center flex-1 md:flex-none whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+            Начать бесплатно
+        </a>
+        <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener noreferrer" class="px-5 md:px-6 py-3 text-xs md:text-sm bg-transparent text-white border border-white/20 font-medium rounded-full hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center flex-1 md:flex-none whitespace-nowrap">
+            ВК сообщество
+        </a>
+    </div>
+
+    <!-- OVERLAYS (ШТОРКИ) -->
+    <div id="buildin" class="overlay">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
+            <div class="swipe-indicator"></div> <!-- Индикатор свайпа для мобилок -->
+            <button onclick="closeOverlay('buildin')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
+                ✕ Закрыть
+            </button>
+            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">Личный кабинет Buildin</h2>
+
+            <div class="space-y-20 md:space-y-32">
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-[var(--lgg-green)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 01</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Полный контроль<br>расписания</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Ученик видит всю картину: темы, даты, оценки и комментарии преподавателя прямо в таблице. Никаких вопросов «а что мне задали».</p>
+                    </div>
+                    <div class="mockup-img">
+                        <img src="img/LK1.png" alt="Расписание LK" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="md:order-2">
+                        <div class="text-[var(--lgg-green)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 02</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Навигация<br>без мусора</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Разделение на актуальные задачи и архив. Актуальное ДЗ помечено лампочкой. Конспекты и записи уроков лежат по полочкам.</p>
+                    </div>
+                    <div class="mockup-img md:order-1">
+                        <img src="img/LK2.png" alt="Домашние задания" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-[var(--lgg-green)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 03</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Сдача ДЗ<br>в два клика</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Решил в тетради, сфоткал, нажал «Загрузить файл». Всё сохраняется в системе, преподаватель сразу видит работу.</p>
+                    </div>
+                    <div class="mockup-img">
+                        <img src="img/LK3.png" alt="Загрузка ДЗ" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stepik" class="overlay">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
+            <div class="swipe-indicator"></div>
+            <button onclick="closeOverlay('stepik')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
+                ✕ Закрыть
+            </button>
+            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">Теория и Практика</h2>
+
+            <div class="space-y-20 md:space-y-32">
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 01: Buildin</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Справочные<br>материалы</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Вся теория по классам (с 6 по 10) собрана в удобные каталоги. Нужны дроби или геометрия? Открываешь плитку и читаешь готовую выжимку правил. База уже в личном кабинете.</p>
+                    </div>
+                    <div class="mockup-img">
+                        <img src="img/materials_6kl.png" alt="Материалы 6 класс" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="md:order-2">
+                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 02: Интеграция</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Переход<br>к тестированию</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Изучил теорию? Сразу закрепляй. Рядом с материалами находится блок тестирования. Из Buildin попадаешь в структуру курса на Stepik, где видишь свой прогресс в цифрах.</p>
+                    </div>
+                    <div class="mockup-img md:order-1">
+                        <img src="img/materials_main.png" alt="Выбор раздела" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 03: Stepik</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Практика<br>до автоматизма</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Решаешь интерактивные тесты прямо с телефона или компьютера. Вводишь ответ и мгновенно получаешь проверку от системы.</p>
+                    </div>
+                    <div class="mockup-img">
+                        <img src="img/testirovania_v_LK.png" alt="Сам процесс тестирования" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="md:order-2">
+                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 04: Stepik</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Структура<br>курса</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Модульное разделение тем на платформе Stepik. Виден каждый шаг и количество полученных баллов.</p>
+                    </div>
+                    <div class="mockup-img md:order-1">
+                        <img src="img/stepik .png" alt="Структура курса" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 05: Stepik</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Интерфейс<br>заданий</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Понятный интерфейс для решения задач. Ввод ответа и получение мгновенной обратной связи.</p>
+                    </div>
+                    <div class="mockup-img">
+                        <img src="img/stepik_primer_testa.png" alt="Пример задания" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="bot" class="overlay">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
+            <div class="swipe-indicator"></div>
+            <button onclick="closeOverlay('bot')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
+                ✕ Закрыть
+            </button>
+            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">VK Бот-ассистент</h2>
+
+            <div class="space-y-20 md:space-y-32">
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-blue-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Навигация</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Главное<br>меню</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Основная информация, форматы, цены и связь собраны в удобном стартовом меню.</p>
+                    </div>
+                    <div class="mobile-mockup-frame">
+                        <img src="img/obzor.png" alt="Главное меню" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="md:order-2">
+                        <div class="text-blue-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Запись</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Автопилот<br>в кармане</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Вся информация о свободном времени преподавателей доступна по кнопкам. Записываешься в один клик.</p>
+                    </div>
+                    <div class="mobile-mockup-frame md:order-1">
+                        <img src="img/svobodn_okna.png" alt="Запись в боте" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-blue-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Уведомления</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Связь<br>родитель-ребёнок</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Бот связывает аккаунты. Напоминание за 20 минут до урока приходит именно ребёнку.</p>
+                    </div>
+                    <div class="mobile-mockup-frame">
+                        <img src="img/moi_zapisi.png" alt="Мои записи в боте" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-12 md:mt-16 pb-12">
+                    <a href="https://vk.me/lggmathnn" target="_blank" class="px-8 md:px-12 py-4 md:py-5 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-500 hover:scale-105 transition-all shadow-xl shadow-blue-900/20 text-center w-full md:w-auto">
+                        Открыть диалог с ботом
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vk" class="overlay">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
+            <div class="swipe-indicator"></div>
+            <button onclick="closeOverlay('vk')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
+                ✕ Закрыть
+            </button>
+            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">Комьюнити и Файлы</h2>
+
+            <div class="space-y-20 md:space-y-32">
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div>
+                        <div class="text-gray-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Доверие</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Реальные<br>отзывы</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Рейтинг 5.0, живые отзывы учеников и полная прозрачность нашей работы.</p>
+                    </div>
+                    <div class="mobile-mockup-frame">
+                        <img src="img/soobshestvo_main.png" alt="Главная страница ВК" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="md:order-2">
+                        <div class="text-gray-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Польза</div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Качественная<br>база файлов</h3>
+                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Мы сами делаем красивые файлы с теорией и материалами для ОГЭ/ЕГЭ и 5-8 классов. Заходи, скачивай, пользуйся.</p>
+                    </div>
+                    <div class="mobile-mockup-frame md:order-1">
+                        <img src="img/kanal_vk.png" alt="Файлы ВК" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-12 md:mt-16 pb-12">
+                    <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener noreferrer" class="px-8 md:px-12 py-4 md:py-5 bg-white text-black font-bold rounded-full hover:bg-gray-200 hover:scale-105 transition-all shadow-xl text-center w-full md:w-auto">
+                        Перейти в сообщество
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Анимация появления элементов
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+        // Открытие и закрытие шторок
+        function openOverlay(id) {
+            document.body.classList.add('overlay-open');
+            const overlay = document.getElementById(id);
+            setTimeout(() => {
+                overlay.classList.add('active');
+                overlay.scrollTop = 0; // Сброс скролла при открытии
+            }, 50);
+        }
+
+        function closeOverlay(id) {
+            document.getElementById(id).classList.remove('active');
+            setTimeout(() => {
+                document.body.classList.remove('overlay-open');
+            }, 300);
+        }
+
+        // Swipe-to-close логика для мобильных устройств
+        const overlays = document.querySelectorAll('.overlay');
+        let startY = 0;
+
+        overlays.forEach(overlay => {
+            overlay.addEventListener('touchstart', e => {
+                // Если мы находимся в самом верху шторки
+                if (overlay.scrollTop === 0) {
+                    startY = e.touches[0].clientY;
+                }
+            }, {passive: true});
+
+            overlay.addEventListener('touchmove', e => {
+                if (startY === 0) return;
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+
+                // Если свайпнули вниз больше чем на 60px
+                if (diff > 60 && overlay.scrollTop <= 0) {
+                    closeOverlay(overlay.id);
+                    startY = 0; // Сбрасываем
+                }
+            }, {passive: true});
+
+            overlay.addEventListener('touchend', () => {
+                startY = 0; // Сбрасываем при отпускании пальца
+            });
+        });
+    </script>
+</body>
+</html>
