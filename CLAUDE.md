@@ -26,11 +26,18 @@ resource/
   skills/ui-ux-pro-max/   # UI/UX скилл с базами стилей, палитр, типографики
 ```
 
-**Зависимости (CDN, без npm/сборщика):**
-- Tailwind CSS — `https://cdn.tailwindcss.com` (defer)
+**Зависимости:**
+- Tailwind CSS — **предкомпилирован в статический CSS, встроен инлайном в `<head>`** (НЕ CDN!). Раньше был `cdn.tailwindcss.com`, но это runtime-JS-компилятор → давал FOUC (вспышку нестилизованной страницы) в медленных браузерах (ВК). Убрано.
 - Poppins + Inter — Google Fonts с preconnect
 
-**Деплой:** Файлы просто загружаются на хостинг. Нет CI, нет build pipeline.
+**⚠️ Не возвращать `cdn.tailwindcss.com`** — вернётся FOUC. Если меняешь Tailwind-классы в `index.html`, пересобери инлайн-CSS:
+```bash
+npx tailwindcss@3 -c tailwind.config.js -i input.css -o out.css --minify
+# затем заменить содержимое первого <style> в <head> на out.css
+```
+(`tailwind.config.js` лежит в корне, `content: ['./index.html']`.)
+
+**Деплой:** Vercel (проект `kutuevtimurs-projects/lgg-web`), домен `www.lgg-school.ru`. GitHub `KutuevTimur/lgg_web` подключён — пуш в `main` авто-деплоит. Статика, build не нужен. `.vercelignore` прячет `resource/`, `.claude`, `*.md`, `tailwind.config.js`.
 
 **Предпросмотр:** открыть `index.html` прямо в браузере или использовать любой локальный HTTP-сервер:
 ```bash
