@@ -3,529 +3,1034 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LGG School | Экосистема</title>
-    <!-- Привязка фавиконки -->
+    <title>LGG School | Математика онлайн</title>
+    <meta name="description" content="Онлайн-репетиторы по математике — 5–8 класс, ОГЭ, ЕГЭ. 1000 ₽/занятие. Студенты Лобачевского и ВШЭ. 50+ учеников, рейтинг 5.0.">
     <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="apple-touch-icon" href="img/logo.png">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Open Graph -->
+    <meta property="og:title" content="LGG School | Математика онлайн">
+    <meta property="og:description" content="Онлайн-репетиторы по математике — 5–8 класс, ОГЭ, ЕГЭ. 1000 ₽/занятие. Студенты Лобачевского и ВШЭ. Рейтинг 5.0.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.lgg-school.ru/">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:image" content="https://www.lgg-school.ru/img/logo.png">
+
+    <!-- Preconnect for faster font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind via CDN — async so it doesn't block paint -->
+    <script>window.tailwindConfig={theme:{extend:{}}}</script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+
     <style>
-        :root { --bg: #030303; --lgg-green: #3CCB32; --lgg-blue: #0056D2; }
+        :root {
+            --green-btn: #16A34A;
+            --green-light: #EDF7EC;
+            --blue: #0056D2;
+            --bg: #F8FAF7;
+            --surface: #FFFFFF;
+            --border: #E4E7E3;
+            --border-strong: #C8CFCC;
+            --text: #111A10;
+            --muted: #5A6B57;
+            --faint: #9BAA97;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: #fff;
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
-            transition: background-color 0.5s ease;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeSpeed;
         }
 
-        #main-wrapper {
-            transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), filter 0.6s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.6s ease;
-            transform-origin: center top;
-            min-height: 100vh;
-            background-color: var(--bg);
-            /* Оптимизация анимации для GPU, чтобы не лагало на мобилках */
-            will-change: transform, filter, border-radius;
-        }
+        /* — Typography — */
+        .h { font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.025em; line-height: 1; color: var(--text); }
+        .stag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); margin-bottom: 1.25rem; }
+        .stag-g { color: var(--green-btn); }
 
-        body.overlay-open #main-wrapper {
-            transform: scale(0.95) translateY(10px);
-            filter: blur(8px) brightness(0.5);
-            border-radius: 2rem;
-            overflow: hidden;
-            pointer-events: none;
-        }
+        /* — Divider — */
+        .div-line { height: 1px; background: linear-gradient(90deg,transparent,var(--border),transparent); margin: 0 auto; max-width: 80rem; }
 
-        .lgg-card {
-            background: rgba(20, 20, 20, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
+        /* — Fade-in — */
+        .fi { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+        .fi.on { opacity: 1; transform: none; }
+        @media (prefers-reduced-motion: reduce) { .fi { transition: none; opacity: 1; transform: none; } }
 
-        .lgg-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent 50%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+        /* — Pulse dot — */
+        .pdot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-btn); position: relative; flex-shrink: 0; }
+        .pdot::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: var(--green-btn); opacity: .25; animation: ping 2s ease-in-out infinite; }
+        @keyframes ping { 0%,100%{ transform:scale(1); opacity:.25; } 50%{ transform:scale(2.2); opacity:0; } }
+        @media (prefers-reduced-motion: reduce) { .pdot::after { animation: none; } }
 
-        .lgg-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
+        /* — Cards — */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 1.25rem; transition: border-color .25s, box-shadow .25s, transform .25s; }
+        @media (hover: hover) { .card:hover { border-color: var(--border-strong); box-shadow: 0 6px 24px rgba(0,0,0,.07); transform: translateY(-3px); } }
 
-        .lgg-card:hover::before { opacity: 1; }
+        .tcard { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; transition: border-color .3s, box-shadow .3s, transform .3s; cursor: pointer; }
+        @media (hover: hover) { .tcard:hover { transform: translateY(-4px); border-color: var(--border-strong); box-shadow: 0 10px 36px rgba(0,0,0,.09); } }
+        .tcard:active { transform: scale(.98); }
 
-        .overlay {
-            position: fixed;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            z-index: 50;
-            transition: top 0.6s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.6s ease;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-bottom: 150px;
-            opacity: 0;
-        }
-        .overlay.active {
-            top: 0;
-            opacity: 1;
-        }
+        .tecard { background: var(--surface); border: 1px solid var(--border); border-radius: 1.25rem; padding: 2rem; transition: border-color .25s, box-shadow .25s, transform .25s; }
+        @media (hover: hover) { .tecard:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.07); } }
 
-        /* Ползунок для подсказки свайпа на мобилках */
-        .swipe-indicator {
-            display: none;
-            width: 40px;
-            height: 5px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            margin: 0 auto 20px auto;
-        }
-        @media (max-width: 768px) {
-            .swipe-indicator { display: block; }
-        }
+        .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem; }
 
-        .floating-bar {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            gap: 0.75rem;
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            padding: 0.5rem;
-            border-radius: 99px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            width: 90%;
-            max-width: max-content;
-            justify-content: center;
-        }
+        /* — FAQ — */
+        .faq { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; transition: border-color .2s; }
+        .faq[open] { border-color: var(--border-strong); }
+        .faq summary { list-style: none; cursor: pointer; padding: 1.25rem 1.375rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-weight: 600; font-size: 15px; color: var(--text); -webkit-tap-highlight-color: transparent; }
+        .faq summary::-webkit-details-marker { display: none; }
+        .faq summary .faq-ic { flex-shrink: 0; width: 22px; height: 22px; position: relative; transition: transform .25s; color: var(--green-btn); }
+        .faq[open] summary .faq-ic { transform: rotate(45deg); }
+        .faq summary .faq-ic::before, .faq summary .faq-ic::after { content: ''; position: absolute; background: currentColor; border-radius: 2px; }
+        .faq summary .faq-ic::before { left: 50%; top: 4px; width: 2px; height: 14px; transform: translateX(-50%); }
+        .faq summary .faq-ic::after { top: 50%; left: 4px; height: 2px; width: 14px; transform: translateY(-50%); }
+        .faq-body { padding: 0 1.375rem 1.25rem; color: var(--muted); font-size: 14px; font-weight: 300; line-height: 1.6; }
+        @media (prefers-reduced-motion: reduce) { .faq summary .faq-ic { transition: none; } }
 
-        .floating-bar:hover {
-            transform: translateX(-50%) scale(1.02);
-            border-color: rgba(255,255,255,0.2);
-        }
+        /* — Month card — */
+        .mcard { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.25rem 1.375rem; }
 
-        .text-gradient {
-            background: linear-gradient(180deg, #FFFFFF 0%, #777777 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
+        /* — Plan overview card — */
+        .povw { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.75rem; display: flex; flex-direction: column; gap: 1.5rem; }
+        @media (min-width: 768px) { .povw { flex-direction: row; align-items: center; gap: 2.5rem; padding: 2.25rem; } }
+        .povw-main { flex: 1; min-width: 0; }
+        .povw-side { display: flex; flex-direction: column; gap: .85rem; flex-shrink: 0; }
+        @media (min-width: 768px) { .povw-side { width: 14rem; } }
+        .povw-stat { background: var(--green-light); border-radius: 1rem; padding: 1rem 1.25rem; text-align: center; }
+        .povw-stat-b { background: #EFF5FF; }
+        .povw-num { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 28px; line-height: 1; color: var(--green-btn); }
+        .povw-cap { font-size: 12px; color: var(--muted); margin-top: .35rem; }
 
-        /* Десктопные скриншоты */
-        .mockup-img {
-            width: 100%;
-            background: #111;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 1.5rem;
-            overflow: hidden;
-            transition: border-color 0.5s ease;
-        }
-        .mockup-img:hover { border-color: rgba(255,255,255,0.3); }
-        .mockup-img img { width: 100%; height: auto; display: block; transition: transform 0.5s ease; }
-        .mockup-img:hover img { transform: scale(1.02); }
+        /* — Buttons — */
+        .btn-g { display: inline-flex; align-items: center; justify-content: center; padding: .85rem 2rem; border-radius: 999px; background: var(--green-btn); color: #fff; font-weight: 700; font-size: .9rem; text-decoration: none; transition: background .2s, transform .2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        @media (hover: hover) { .btn-g:hover { background: #15803D; transform: scale(1.03); } }
+        .btn-g:active { transform: scale(.97); }
 
-        /* СПЕЦИАЛЬНЫЙ КОНТЕЙНЕР ДЛЯ МОБИЛЬНЫХ СКРИНШОТОВ */
-        .mobile-mockup-frame {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 9 / 18;
-            background: #111;
-            border: 5px solid rgba(255, 255, 255, 0.08);
-            border-radius: 2rem;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            margin: 0 auto;
-            max-width: 300px;
-        }
+        .btn-o { display: inline-flex; align-items: center; justify-content: center; padding: .85rem 1.75rem; border-radius: 999px; border: 1.5px solid var(--border-strong); color: var(--muted); font-weight: 500; font-size: .9rem; text-decoration: none; background: var(--surface); transition: border-color .2s, color .2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        @media (hover: hover) { .btn-o:hover { border-color: var(--text); color: var(--text); } }
 
-        .mobile-mockup-frame img {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transform: scale(1.4);
-            transition: transform 0.3s ease;
-        }
-        .mobile-mockup-frame:hover img { transform: scale(1.45); }
+        /* — Plan tabs — */
+        .plan-tab { padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border); color: var(--muted); background: var(--surface); cursor: pointer; white-space: nowrap; transition: background .2s, border-color .2s, color .2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        .plan-tab.active { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        /* — Chip — */
+        .chip { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 999px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+
+        /* — Arrow link — */
+        .alink { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); transition: color .2s; text-decoration: none; }
+        @media (hover: hover) { .alink:hover { color: var(--text); } }
+
+        /* — Float bar — */
+        .fbar { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(255,255,255,.96); border: 1px solid var(--border); border-radius: 999px; padding: .35rem; display: flex; gap: .4rem; box-shadow: 0 6px 32px rgba(0,0,0,.11); }
+        /* No backdrop-filter on mobile — too expensive */
+        @media (min-width: 768px) { .fbar { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); } }
+
+        /* — OVERLAY (light theme, matches the site) — */
+        .overlay { position: fixed; inset: 0; top: 100%; background: var(--bg); z-index: 200; transition: top .5s cubic-bezier(.32,.72,0,1), opacity .5s ease; overflow-y: auto; opacity: 0; padding-bottom: 120px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .overlay.active { top: 0; opacity: 1; }
+
+        #page { transition: transform .45s cubic-bezier(.32,.72,0,1), border-radius .45s ease; will-change: transform; }
+        /* On mobile — skip the expensive blur, just scale */
+        body.ov-open #page { transform: scale(0.95) translateY(6px); border-radius: 1.5rem; overflow: hidden; pointer-events: none; }
+        @media (min-width: 768px) { body.ov-open #page { transform: scale(0.93) translateY(8px); filter: blur(4px) brightness(0.75); border-radius: 2rem; } }
+
+        /* — Overlay close btn — */
+        .ov-close { position: sticky; top: 1rem; z-index: 50; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.06); transition: color .2s, border-color .2s; margin-bottom: 2rem; }
+        @media (hover: hover) { .ov-close:hover { color: var(--text); border-color: var(--border-strong); } }
+
+        /* — Mockup in overlay (light bg) — */
+        .mockup { border-radius: 1.25rem; border: 1px solid var(--border); overflow: hidden; background: #F0F2EF; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+        .mockup img { width: 100%; height: auto; display: block; }
+
+        /* — Phone mockup in overlay — */
+        .pmockup { width: 200px; height: 422px; background: #F0F2EF; border: 3px solid var(--border); border-radius: 2rem; overflow: hidden; margin: auto; box-shadow: 0 12px 40px rgba(0,0,0,.1); position: relative; }
+        .pmockup img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+
+        /* — Swipe indicator in overlay — */
+        .swipeh { width: 34px; height: 4px; background: var(--border); border-radius: 10px; margin: 0 auto 1.5rem; }
+        @media (min-width: 768px) { .swipeh { display: none; } }
+
+        /* — Referral step badge — */
+        .ref-num { width: 40px; height: 40px; border-radius: 50%; background: var(--green-light); color: var(--green-btn); font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-family: 'Poppins', sans-serif; flex-shrink: 0; }
+        .ref-num.hi { background: var(--green-btn); color: #fff; }
+
+        /* — Hero bg orb — */
+        .orb { position: absolute; border-radius: 50%; pointer-events: none; }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <!-- ЛОГОТИП С БЕЛЫМ ФОНОМ ДЛЯ КОНТРАСТА -->
-    <div class="absolute top-6 left-6 md:top-10 md:left-10 z-50 flex items-center gap-3 cursor-pointer transition-transform hover:scale-105">
-        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white flex items-center justify-center shadow-xl overflow-hidden p-1">
-            <img src="img/logo.png" alt="LGG Logo" class="w-full h-full object-contain">
-        </div>
-        <span class="font-bold text-xl md:text-2xl tracking-widest text-white">LGG<span class="text-[var(--lgg-blue)]">.</span></span>
+<!-- Logo -->
+<div class="fixed top-5 left-5 md:top-8 md:left-10 z-50 flex items-center gap-2.5">
+    <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center overflow-hidden p-1 shadow-sm border border-[var(--border)]">
+        <img src="img/logo.png" alt="LGG" width="200" height="151" decoding="async" class="w-full h-full object-contain">
     </div>
+    <span class="font-black text-lg tracking-widest text-[var(--text)]" style="font-family:'Poppins',sans-serif">LGG<span style="color:var(--blue)">.</span></span>
+</div>
 
-    <div id="main-wrapper">
-        <main class="max-w-7xl mx-auto px-4 md:px-6 pt-24 md:pt-32 pb-40 md:pb-32">
+<div id="page">
 
-            <header class="mb-16 md:mb-24 text-center reveal active flex flex-col items-center">
+    <!-- ═══ HERO ═══ -->
+    <section class="relative min-h-[100svh] flex flex-col items-center justify-center text-center px-5 overflow-hidden" style="background:linear-gradient(170deg,#EDF7EC 0%,var(--bg) 55%)">
+        <div class="orb w-[500px] h-[300px] opacity-25" style="background:radial-gradient(ellipse,#3CCB32 0%,transparent 70%);filter:blur(70px);top:0;left:50%;transform:translateX(-50%)"></div>
 
-                <!-- БЕЙДЖ ДОВЕРИЯ / СРОЧНОСТИ -->
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6 md:mb-8 backdrop-blur-sm">
-                    <span class="flex h-2 w-2 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--lgg-green)] opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[var(--lgg-green)]"></span>
-                    </span>
-                    <span class="text-xs md:text-sm font-medium text-gray-300">40+ учеников • Места на этот месяц ограничены</span>
+        <div class="relative z-10 max-w-4xl mx-auto w-full">
+
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-[var(--border)] shadow-sm mb-7 fi on">
+                <div class="pdot"></div>
+                <span class="text-xs font-medium text-[var(--muted)]">Первое занятие — бесплатно · Набор открыт</span>
+            </div>
+
+            <h1 class="h mb-5 fi on" style="font-size:clamp(42px,9vw,96px);transition-delay:60ms">
+                Понятная<br>математика —<br><span style="color:var(--green-btn)">для результата.</span>
+            </h1>
+
+            <p class="text-[var(--muted)] font-light mb-5 fi on" style="font-size:clamp(16px,2vw,20px);transition-delay:110ms;line-height:1.6">
+                Онлайн-репетиторы из Лобачевского и ВШЭ.<br class="hidden sm:block">
+                Объясняем просто и доводим до цели — 5–8 класс, ОГЭ и ЕГЭ по всей России.
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-9 fi on" style="transition-delay:140ms">
+                <span class="flex items-center gap-1.5 text-sm font-semibold"><span class="text-yellow-400">★★★★★</span> 5.0 в ВК</span>
+                <span class="text-[var(--border-strong)]">·</span>
+                <span class="text-sm font-bold text-[var(--green-btn)]">1 000 ₽/занятие</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 fi on" style="transition-delay:170ms">
+                <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g w-full sm:w-auto text-base px-9 py-4">
+                    Попробовать бесплатно →
+                </a>
+                <a href="https://vk.com/reviews-231529027" target="_blank" rel="noopener" class="btn-o w-full sm:w-auto text-base px-8 py-4">
+                    Отзывы в ВК
+                </a>
+            </div>
+            <p class="text-[var(--faint)] text-xs mt-4 fi on" style="transition-delay:200ms">Затем 1 000 ₽/занятие · без договоров и предоплат</p>
+        </div>
+
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-20 pointer-events-none">
+            <span class="text-[10px] font-semibold tracking-[.2em] uppercase text-[var(--muted)]">Листайте</span>
+            <div class="w-px h-10 bg-gradient-to-b from-[var(--muted)] to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- ═══ STATS ═══ -->
+    <section class="px-5 py-10 fi">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[var(--border)] border border-[var(--border)] rounded-2xl overflow-hidden bg-white shadow-sm">
+                <div class="px-6 py-7 flex flex-col gap-1">
+                    <span class="font-black text-[var(--text)] leading-none" style="font-size:clamp(34px,5vw,52px);font-family:'Poppins',sans-serif">50+</span>
+                    <span class="text-sm text-[var(--muted)] font-light">учеников</span>
                 </div>
+                <div class="px-6 py-7 flex flex-col gap-1">
+                    <span class="font-black text-[var(--text)] leading-none" style="font-size:clamp(34px,5vw,52px);font-family:'Poppins',sans-serif">2</span>
+                    <span class="text-sm text-[var(--muted)] font-light">года работы</span>
+                </div>
+                <div class="px-6 py-7 flex flex-col gap-1">
+                    <span class="font-black text-[var(--green-btn)] leading-none" style="font-size:clamp(34px,5vw,52px);font-family:'Poppins',sans-serif">5.0</span>
+                    <span class="text-sm text-[var(--muted)] font-light">рейтинг ВК</span>
+                </div>
+                <div class="px-6 py-7 flex flex-col gap-1">
+                    <span class="font-black text-[var(--text)] leading-none" style="font-size:clamp(34px,5vw,52px);font-family:'Poppins',sans-serif">3</span>
+                    <span class="text-sm text-[var(--muted)] font-light">преподавателя</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <h1 class="text-5xl md:text-[90px] font-black text-gradient tracking-tighter mb-4 md:mb-8 leading-none">
-                    Система, которая<br>даёт результат.
-                </h1>
-                <p class="text-gray-400 text-base md:text-xl font-light">Нажмите на карточку, чтобы изучить инструменты.</p>
-            </header>
+    <div class="div-line"></div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-
-                <div onclick="openOverlay('buildin')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal">
+    <!-- ═══ WHY US ═══ -->
+    <section class="px-5 py-14 fi">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag">Почему LGG</div>
+            <h2 class="h mb-10" style="font-size:clamp(28px,5vw,54px)">Не просто репетиторы.</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="card p-6 flex gap-4">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:var(--green-light);color:var(--green-btn)">
+                        <svg class="w-5 h-5" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"/></svg>
+                    </div>
                     <div>
-                        <div class="flex items-center gap-3 mb-3 md:mb-4">
-                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[var(--lgg-green)] animate-pulse"></div>
-                            <span class="text-[var(--lgg-green)] font-bold text-[10px] md:text-xs uppercase tracking-widest">База знаний</span>
+                        <h3 class="font-bold text-base mb-1">Студенты топ-вузов</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Лобачевский и ВШЭ. Нам по 20 лет — сами недавно сдавали и помним, где было сложно.</p>
+                    </div>
+                </div>
+                <div class="card p-6 flex gap-4">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EFF5FF;color:var(--blue)">
+                        <svg class="w-5 h-5" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base mb-1">Система, не хаос</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Личный кабинет, авторские материалы, тесты и бот-напоминалка — всё в одной экосистеме.</p>
+                    </div>
+                </div>
+                <div class="card p-6 flex gap-4">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#F0F4FF;color:#3B82F6">
+                        <svg class="w-5 h-5" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base mb-1">Онлайн — вся Россия</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Занимаемся из любого города. Нужен только телефон или ноутбук.</p>
+                    </div>
+                </div>
+                <div class="card p-6 flex gap-4">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#FFFBEB;color:#B45309">
+                        <svg class="w-5 h-5" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base mb-1">Оценка растёт за месяц</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Прицельно закрываем пробелы — не гоним программу по учебнику. Результат виден быстро.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="div-line"></div>
+
+    <!-- ═══ PLANS ═══ -->
+    <section class="px-5 py-14 md:py-20 fi">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag">Программа обучения</div>
+            <h2 class="h mb-3" style="font-size:clamp(34px,6vw,64px)">Выберите свой путь.</h2>
+            <p class="text-[var(--muted)] text-lg font-light mb-7">У каждого своя ситуация — для каждой у нас есть готовый маршрут.</p>
+
+            <!-- Tabs — horizontal scroll on mobile -->
+            <div class="flex gap-2 mb-7 overflow-x-auto pb-1 -mx-5 px-5 md:mx-0 md:px-0 md:flex-wrap scrollbar-none" style="scrollbar-width:none;-ms-overflow-style:none">
+                <button onclick="switchPlan('p58')" id="tab-p58" class="plan-tab active">5–8 класс</button>
+                <button onclick="switchPlan('p9')" id="tab-p9" class="plan-tab">9 класс · ОГЭ</button>
+                <button onclick="switchPlan('p10')" id="tab-p10" class="plan-tab">10 класс</button>
+                <button onclick="switchPlan('p11')" id="tab-p11" class="plan-tab">11 класс · ЕГЭ</button>
+                <button onclick="switchPlan('retake')" id="tab-retake" class="plan-tab">Пересдача</button>
+                <button onclick="switchPlan('p1kurs')" id="tab-p1kurs" class="plan-tab">1 курс</button>
+            </div>
+
+            <!-- 5–8 класс -->
+            <div id="plan-p58" class="plan-body">
+                <div class="povw">
+                    <div class="povw-main">
+                        <div class="stag stag-g" style="margin-bottom:.7rem">5–8 класс · Школьная программа</div>
+                        <h3 class="h text-2xl md:text-3xl mb-2.5 leading-tight">Уверенная база по математике</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed mb-4 max-w-md">Закрываем пробелы, готовим к контрольным и поднимаем оценку — в комфортном для ученика темпе, без гонки по учебнику.</p>
+                        <div class="flex flex-wrap gap-2"><span class="chip">Алгебра</span><span class="chip">Геометрия</span><span class="chip">Контрольные</span><span class="chip">Личный темп</span></div>
+                    </div>
+                    <div class="povw-side">
+                        <div class="povw-stat"><div class="povw-num">1–2 мес</div><div class="povw-cap">до роста оценки</div></div>
+                        <button onclick="openOv('p58full')" class="btn-g w-full text-sm" aria-label="Открыть программу 5–8 класса">Смотреть программу →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9 класс ОГЭ -->
+            <div id="plan-p9" class="plan-body hidden">
+                <div class="povw">
+                    <div class="povw-main">
+                        <div class="stag stag-g" style="margin-bottom:.7rem">9 класс · Подготовка к ОГЭ</div>
+                        <h3 class="h text-2xl md:text-3xl mb-2.5 leading-tight">Годовой план: сентябрь — май</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed mb-4 max-w-md">Помесячный маршрут по всем заданиям ОГЭ — от первой части до доказательств и полных вариантов на время.</p>
+                        <div class="flex flex-wrap gap-2"><span class="chip">Первая часть</span><span class="chip">Вторая часть</span><span class="chip">Геометрия</span><span class="chip">Варианты на время</span></div>
+                    </div>
+                    <div class="povw-side">
+                        <div class="povw-stat"><div class="povw-num">9 мес</div><div class="povw-cap">сентябрь — май</div></div>
+                        <button onclick="openOv('poge')" class="btn-g w-full text-sm" aria-label="Открыть программу ОГЭ">Смотреть программу →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10 класс -->
+            <div id="plan-p10" class="plan-body hidden">
+                <div class="povw">
+                    <div class="povw-main">
+                        <div class="stag" style="color:var(--blue);margin-bottom:.7rem">10 класс · Старт подготовки к ЕГЭ</div>
+                        <h3 class="h text-2xl md:text-3xl mb-2.5 leading-tight">Закладываем фундамент ЕГЭ</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed mb-4 max-w-md">Системно проходим базу — уравнения, тригонометрию, логарифмы, производную и планиметрию. Летний интенсив даёт 46 баллов уже к осени.</p>
+                        <div class="flex flex-wrap gap-2"><span class="chip">Тригонометрия</span><span class="chip">Логарифмы</span><span class="chip">Производная</span><span class="chip">Планиметрия</span></div>
+                    </div>
+                    <div class="povw-side">
+                        <div class="povw-stat povw-stat-b"><div class="povw-num" style="color:var(--blue)">46 баллов</div><div class="povw-cap">за лето</div></div>
+                        <button onclick="openOv('p10full')" class="btn-g w-full text-sm" aria-label="Открыть программу 10 класса">Смотреть программу →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11 класс ЕГЭ -->
+            <div id="plan-p11" class="plan-body hidden">
+                <div class="povw">
+                    <div class="povw-main">
+                        <div class="stag" style="color:var(--blue);margin-bottom:.7rem">11 класс · Подготовка к ЕГЭ</div>
+                        <h3 class="h text-2xl md:text-3xl mb-2.5 leading-tight">Полный курс ЕГЭ — на максимум</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed mb-4 max-w-md">15 блоков от базовой части до второй части: параметры, финансовая математика, стереометрия и олимпиадное задание №19.</p>
+                        <div class="flex flex-wrap gap-2"><span class="chip">Первая часть</span><span class="chip">Вторая часть</span><span class="chip">Параметры</span><span class="chip">Финансы</span></div>
+                    </div>
+                    <div class="povw-side">
+                        <div class="povw-stat povw-stat-b"><div class="povw-num" style="color:var(--blue)">15</div><div class="povw-cap">блоков программы</div></div>
+                        <button onclick="openOv('p11full')" class="btn-g w-full text-sm" aria-label="Открыть программу 11 класса">Смотреть программу →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Пересдача -->
+            <div id="plan-retake" class="plan-body hidden">
+                <div class="povw">
+                    <div class="povw-main">
+                        <div class="stag" style="color:#B45309;margin-bottom:.7rem">Пересдача · Экстренный курс</div>
+                        <h3 class="h text-2xl md:text-3xl mb-2.5 leading-tight">Пересдача за один месяц</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed mb-4 max-w-md">Прицельно берём задания, которые дают максимум баллов за минимум времени: диагностика пробелов, интенсив по слабым темам и финальные варианты.</p>
+                        <div class="flex flex-wrap gap-2"><span class="chip">Диагностика</span><span class="chip">Интенсив</span><span class="chip">Финал</span></div>
+                    </div>
+                    <div class="povw-side">
+                        <div class="povw-stat" style="background:#FFFBEB"><div class="povw-num" style="color:#B45309">1 месяц</div><div class="povw-cap">до пересдачи</div></div>
+                        <button onclick="openOv('pretakefull')" class="btn-g w-full text-sm" aria-label="Открыть программу пересдачи">Смотреть программу →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1 курс -->
+            <div id="plan-p1kurs" class="plan-body hidden">
+                <div class="povw">
+                    <div class="povw-main">
+                        <div class="stag stag-g" style="margin-bottom:.7rem">1 курс · Математические специальности</div>
+                        <h3 class="h text-2xl md:text-3xl mb-2.5 leading-tight">Высшая математика с первых пар</h3>
+                        <p class="text-[var(--muted)] text-sm font-light leading-relaxed mb-4 max-w-md">Алгебра и математический анализ за первый семестр — матрицы, комплексные числа, пределы и производные. Без долгов и пересдач в сессию.</p>
+                        <div class="flex flex-wrap gap-2"><span class="chip">Алгебра</span><span class="chip">Мат. анализ</span><span class="chip">Матрицы</span><span class="chip">Пределы</span></div>
+                    </div>
+                    <div class="povw-side">
+                        <div class="povw-stat"><div class="povw-num">2</div><div class="povw-cap">предмета · 1 семестр</div></div>
+                        <button onclick="openOv('puni')" class="btn-g w-full text-sm" aria-label="Открыть программу 1 курса">Смотреть программу →</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4 text-base">
+                    Записаться на бесплатный урок →
+                </a>
+                <p class="text-[var(--faint)] text-xs mt-3">Затем 1 000 ₽/занятие · без предоплат</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="div-line"></div>
+
+    <!-- ═══ ECOSYSTEM ═══ -->
+    <section class="px-5 py-14 md:py-20 fi">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag">Экосистема</div>
+            <h2 class="h mb-3" style="font-size:clamp(32px,6vw,62px)">Всё для учёбы —<br>в одном месте.</h2>
+            <p class="text-[var(--muted)] text-lg font-light mb-8">Нажмите на карточку, чтобы изучить инструменты.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div onclick="openOv('buildin')" class="tcard p-7 min-h-[160px] flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-2 h-2 rounded-full animate-pulse bg-[var(--green-btn)]"></div>
+                            <span class="font-bold text-[10px] uppercase tracking-widest text-[var(--green-btn)]">База знаний</span>
                         </div>
-                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">Личный кабинет</h3>
+                        <h3 class="text-xl md:text-2xl font-bold">Личный кабинет</h3>
                     </div>
-                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Buildin: расписание, конспекты и загрузка домашек без хаоса в чатах.</p>
+                    <p class="text-[var(--muted)] text-sm mt-3">Buildin: расписание, конспекты и домашние задания без хаоса в чатах.</p>
                 </div>
-
-                <div onclick="openOverlay('stepik')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal" style="transition-delay: 50ms;">
+                <div onclick="openOv('stepik')" class="tcard p-7 min-h-[160px] flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center gap-3 mb-3 md:mb-4">
-                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[var(--lgg-blue)]"></div>
-                            <span class="text-[var(--lgg-blue)] font-bold text-[10px] md:text-xs uppercase tracking-widest">Практика</span>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-2 h-2 rounded-full bg-[var(--blue)]"></div>
+                            <span class="font-bold text-[10px] uppercase tracking-widest text-[var(--blue)]">Практика</span>
                         </div>
-                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">Материалы и тесты</h3>
+                        <h3 class="text-xl md:text-2xl font-bold">Материалы и тесты</h3>
                     </div>
-                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Специально разработанные нами материалы и тесты с мгновенной проверкой и статистикой.</p>
+                    <p class="text-[var(--muted)] text-sm mt-3">Авторские материалы и тесты с мгновенной проверкой и статистикой.</p>
                 </div>
-
-                <div onclick="openOverlay('bot')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal" style="transition-delay: 100ms;">
+                <div onclick="openOv('bot')" class="tcard p-7 min-h-[160px] flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center gap-3 mb-3 md:mb-4">
-                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-blue-400"></div>
-                            <span class="text-blue-400 font-bold text-[10px] md:text-xs uppercase tracking-widest">Ассистент</span>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-2 h-2 rounded-full" style="background:#60A5FA"></div>
+                            <span class="font-bold text-[10px] uppercase tracking-widest" style="color:#3B82F6">Ассистент</span>
                         </div>
-                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">VK Бот</h3>
+                        <h3 class="text-xl md:text-2xl font-bold">VK Бот</h3>
                     </div>
-                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Быстрая запись, напоминания за 20 минут до урока и удобная связь родитель-ребёнок.</p>
+                    <p class="text-[var(--muted)] text-sm mt-3">Запись, напоминания за 20 мин до урока, связь родитель–ребёнок.</p>
                 </div>
-
-                <div onclick="openOverlay('vk')" class="lgg-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 min-h-[200px] md:h-96 flex flex-col justify-between reveal" style="transition-delay: 150ms;">
+                <div onclick="openOv('vk')" class="tcard p-7 min-h-[160px] flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center gap-3 mb-3 md:mb-4">
-                            <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-gray-400"></div>
-                            <span class="text-gray-300 font-bold text-[10px] md:text-xs uppercase tracking-widest">Комьюнити</span>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+                            <span class="font-bold text-[10px] uppercase tracking-widest text-gray-400">Комьюнити</span>
                         </div>
-                        <h3 class="text-3xl md:text-5xl font-bold mt-1 md:mt-2 leading-tight">База файлов</h3>
+                        <h3 class="text-xl md:text-2xl font-bold">База файлов</h3>
                     </div>
-                    <p class="text-gray-400 text-sm md:text-lg mt-6 md:mt-0">Отзывы учеников и авторские материалы для ОГЭ/ЕГЭ в нашем ВК-канале и сообществе.</p>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- ПЛАВАЮЩИЙ БАР (Оптимизирован для конверсии) -->
-    <div class="floating-bar">
-        <a href="https://vk.me/lggmathnn" target="_blank" class="px-6 md:px-8 py-3 text-sm md:text-base bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center flex-1 md:flex-none whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-            Начать бесплатно
-        </a>
-        <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener noreferrer" class="px-5 md:px-6 py-3 text-xs md:text-sm bg-transparent text-white border border-white/20 font-medium rounded-full hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center flex-1 md:flex-none whitespace-nowrap">
-            ВК сообщество
-        </a>
-    </div>
-
-    <!-- OVERLAYS (ШТОРКИ) -->
-    <div id="buildin" class="overlay">
-        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
-            <div class="swipe-indicator"></div> <!-- Индикатор свайпа для мобилок -->
-            <button onclick="closeOverlay('buildin')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
-                ✕ Закрыть
-            </button>
-            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">Личный кабинет Buildin</h2>
-
-            <div class="space-y-20 md:space-y-32">
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-[var(--lgg-green)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 01</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Полный контроль<br>расписания</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Ученик видит всю картину: темы, даты, оценки и комментарии преподавателя прямо в таблице. Никаких вопросов «а что мне задали».</p>
-                    </div>
-                    <div class="mockup-img">
-                        <img src="img/LK1.png" alt="Расписание LK" loading="lazy">
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div class="md:order-2">
-                        <div class="text-[var(--lgg-green)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 02</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Навигация<br>без мусора</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Разделение на актуальные задачи и архив. Актуальное ДЗ помечено лампочкой. Конспекты и записи уроков лежат по полочкам.</p>
-                    </div>
-                    <div class="mockup-img md:order-1">
-                        <img src="img/LK2.png" alt="Домашние задания" loading="lazy">
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-[var(--lgg-green)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 03</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Сдача ДЗ<br>в два клика</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Решил в тетради, сфоткал, нажал «Загрузить файл». Всё сохраняется в системе, преподаватель сразу видит работу.</p>
-                    </div>
-                    <div class="mockup-img">
-                        <img src="img/LK3.png" alt="Загрузка ДЗ" loading="lazy">
-                    </div>
+                    <p class="text-[var(--muted)] text-sm mt-3">Отзывы и авторские материалы по ОГЭ/ЕГЭ в нашем ВК-сообществе.</p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="stepik" class="overlay">
-        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
-            <div class="swipe-indicator"></div>
-            <button onclick="closeOverlay('stepik')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
-                ✕ Закрыть
-            </button>
-            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">Теория и Практика</h2>
+    <div class="div-line"></div>
 
-            <div class="space-y-20 md:space-y-32">
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 01: Buildin</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Справочные<br>материалы</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Вся теория по классам (с 6 по 10) собрана в удобные каталоги. Нужны дроби или геометрия? Открываешь плитку и читаешь готовую выжимку правил. База уже в личном кабинете.</p>
-                    </div>
-                    <div class="mockup-img">
-                        <img src="img/materials_6kl.png" alt="Материалы 6 класс" loading="lazy">
-                    </div>
+    <!-- ═══ TEACHERS ═══ -->
+    <section class="px-5 py-14 md:py-20 fi">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag">Преподаватели</div>
+            <h2 class="h mb-3" style="font-size:clamp(32px,6vw,62px)">Знаем предмет.<br>Умеем объяснять.</h2>
+            <p class="text-[var(--muted)] text-lg font-light mb-8">Нам по 20 лет. Мы сами недавно сдавали ЕГЭ — знаем, где сложно и почему.</p>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="tecard">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black mb-5" style="background:linear-gradient(135deg,rgba(22,163,74,.12),rgba(22,163,74,.03));color:var(--green-btn);font-family:'Poppins',sans-serif">С</div>
+                    <h3 class="text-xl font-bold mb-1">Сергей</h3>
+                    <p class="text-[var(--muted)] text-sm mb-5 leading-relaxed">ННГУ им. Лобачевского<br>Математика · 2 курс</p>
+                    <div class="flex flex-wrap gap-2"><span class="chip">ОГЭ</span><span class="chip">ЕГЭ</span><span class="chip">5–8 кл</span><span class="chip">1 курс</span></div>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div class="md:order-2">
-                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 02: Интеграция</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Переход<br>к тестированию</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Изучил теорию? Сразу закрепляй. Рядом с материалами находится блок тестирования. Из Buildin попадаешь в структуру курса на Stepik, где видишь свой прогресс в цифрах.</p>
-                    </div>
-                    <div class="mockup-img md:order-1">
-                        <img src="img/materials_main.png" alt="Выбор раздела" loading="lazy">
-                    </div>
+                <div class="tecard">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black mb-5" style="background:linear-gradient(135deg,rgba(0,86,210,.1),rgba(0,86,210,.02));color:var(--blue);font-family:'Poppins',sans-serif">Т</div>
+                    <h3 class="text-xl font-bold mb-1">Тимур</h3>
+                    <p class="text-[var(--muted)] text-sm mb-5 leading-relaxed">НИУ ВШЭ<br>КНТ · 2 курс</p>
+                    <div class="flex flex-wrap gap-2"><span class="chip">ОГЭ</span><span class="chip">ЕГЭ</span><span class="chip">5–8 кл</span><span class="chip">1 курс</span></div>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 03: Stepik</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Практика<br>до автоматизма</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Решаешь интерактивные тесты прямо с телефона или компьютера. Вводишь ответ и мгновенно получаешь проверку от системы.</p>
-                    </div>
-                    <div class="mockup-img">
-                        <img src="img/testirovania_v_LK.png" alt="Сам процесс тестирования" loading="lazy">
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div class="md:order-2">
-                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 04: Stepik</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Структура<br>курса</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Модульное разделение тем на платформе Stepik. Виден каждый шаг и количество полученных баллов.</p>
-                    </div>
-                    <div class="mockup-img md:order-1">
-                        <img src="img/stepik .png" alt="Структура курса" loading="lazy">
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-[var(--lgg-blue)] font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Шаг 05: Stepik</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Интерфейс<br>заданий</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Понятный интерфейс для решения задач. Ввод ответа и получение мгновенной обратной связи.</p>
-                    </div>
-                    <div class="mockup-img">
-                        <img src="img/stepik_primer_testa.png" alt="Пример задания" loading="lazy">
-                    </div>
+                <div class="tecard">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black mb-5 text-gray-400" style="background:#F3F4F6;font-family:'Poppins',sans-serif">Д</div>
+                    <h3 class="text-xl font-bold mb-1">Даниил</h3>
+                    <p class="text-[var(--muted)] text-sm mb-5 leading-relaxed">ННГУ им. Лобачевского<br>Прогр. инженерия · 2 курс</p>
+                    <div class="flex flex-wrap gap-2"><span class="chip">ОГЭ</span><span class="chip">ЕГЭ</span><span class="chip">5–8 кл</span><span class="chip">1 курс</span></div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="bot" class="overlay">
-        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
-            <div class="swipe-indicator"></div>
-            <button onclick="closeOverlay('bot')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
-                ✕ Закрыть
-            </button>
-            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">VK Бот-ассистент</h2>
+    <div class="div-line"></div>
 
-            <div class="space-y-20 md:space-y-32">
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-blue-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Навигация</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Главное<br>меню</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Основная информация, форматы, цены и связь собраны в удобном стартовом меню.</p>
-                    </div>
-                    <div class="mobile-mockup-frame">
-                        <img src="img/obzor.png" alt="Главное меню" loading="lazy">
-                    </div>
+    <!-- ═══ REVIEWS ═══ -->
+    <section class="px-5 py-14 md:py-20 fi" style="background:#F4F7F3">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag">Отзывы</div>
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <h2 class="h" style="font-size:clamp(32px,6vw,62px)">Говорят<br>ученики.</h2>
+                <a href="https://vk.com/reviews-231529027" target="_blank" rel="noopener" class="alink shrink-0">Все отзывы в ВК →</a>
+            </div>
+            <div class="bg-white border border-[var(--border)] rounded-2xl p-7 flex flex-col md:flex-row items-center gap-7 md:gap-12 mb-4 shadow-sm">
+                <div class="text-center shrink-0">
+                    <div class="font-black text-[var(--green-btn)] leading-none mb-1" style="font-size:72px;font-family:'Poppins',sans-serif">5.0</div>
+                    <div class="text-yellow-400 text-xl tracking-widest mb-1">★★★★★</div>
+                    <div class="text-[var(--muted)] text-sm">рейтинг сообщества</div>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div class="md:order-2">
-                        <div class="text-blue-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Запись</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Автопилот<br>в кармане</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Вся информация о свободном времени преподавателей доступна по кнопкам. Записываешься в один клик.</p>
-                    </div>
-                    <div class="mobile-mockup-frame md:order-1">
-                        <img src="img/svobodn_okna.png" alt="Запись в боте" loading="lazy">
-                    </div>
+                <div class="w-px h-16 bg-[var(--border)] hidden md:block shrink-0"></div>
+                <div>
+                    <p class="text-[var(--muted)] text-base font-light leading-relaxed mb-3">Работаем 2 года. Ниже — три настоящих отзыва из ВК-сообщества, без правок.</p>
+                    <a href="https://vk.com/reviews-231529027" target="_blank" rel="noopener" class="text-sm font-semibold text-[var(--green-btn)]">Все отзывы в ВК →</a>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-blue-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Уведомления</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Связь<br>родитель-ребёнок</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Бот связывает аккаунты. Напоминание за 20 минут до урока приходит именно ребёнку.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4">
+                <a href="https://vk.com/reviews-231529027" target="_blank" rel="noopener" class="block group outline-none">
+                    <div class="bg-white border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm transition-all duration-300" style="transform:translateY(0)" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.10)';this.style.borderColor='var(--border-strong)'" onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor=''">
+                        <img src="img/IMG_6472.jpg" alt="Отзыв Татьяна Корнеева — 6 класс, занятия с Тимуром" class="w-full h-auto block" loading="lazy" decoding="async">
+                        <div class="px-4 py-3 flex items-center justify-between border-t border-[var(--border)]">
+                            <span class="text-xs text-[var(--muted)] font-medium">Татьяна К. · 6 класс</span>
+                            <span class="text-xs font-semibold" style="color:var(--green-btn)">Отзыв в ВК →</span>
+                        </div>
                     </div>
-                    <div class="mobile-mockup-frame">
-                        <img src="img/moi_zapisi.png" alt="Мои записи в боте" loading="lazy">
+                </a>
+                <a href="https://vk.com/reviews-231529027" target="_blank" rel="noopener" class="block group outline-none">
+                    <div class="bg-white border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm transition-all duration-300" style="transform:translateY(0)" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.10)';this.style.borderColor='var(--border-strong)'" onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor=''">
+                        <img src="img/IMG_6473.jpg" alt="Отзыв Дарья Мещерякова — подготовка к ЕГЭ с Сергеем" class="w-full h-auto block" loading="lazy" decoding="async">
+                        <div class="px-4 py-3 flex items-center justify-between border-t border-[var(--border)]">
+                            <span class="text-xs text-[var(--muted)] font-medium">Дарья М. · ЕГЭ</span>
+                            <span class="text-xs font-semibold" style="color:var(--green-btn)">Отзыв в ВК →</span>
+                        </div>
                     </div>
-                </div>
+                </a>
+                <a href="https://vk.com/reviews-231529027" target="_blank" rel="noopener" class="block group outline-none">
+                    <div class="bg-white border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm transition-all duration-300" style="transform:translateY(0)" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.10)';this.style.borderColor='var(--border-strong)'" onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor=''">
+                        <img src="img/IMG_6475.jpg" alt="Отзыв Алина Кутуева — занятия с Даниилом" class="w-full h-auto block" loading="lazy" decoding="async">
+                        <div class="px-4 py-3 flex items-center justify-between border-t border-[var(--border)]">
+                            <span class="text-xs text-[var(--muted)] font-medium">Алина К. · успеваемость</span>
+                            <span class="text-xs font-semibold" style="color:var(--green-btn)">Отзыв в ВК →</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
 
-                <div class="flex justify-center mt-12 md:mt-16 pb-12">
-                    <a href="https://vk.me/lggmathnn" target="_blank" class="px-8 md:px-12 py-4 md:py-5 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-500 hover:scale-105 transition-all shadow-xl shadow-blue-900/20 text-center w-full md:w-auto">
-                        Открыть диалог с ботом
-                    </a>
+    <div class="div-line"></div>
+
+    <!-- ═══ PRICING ═══ -->
+    <section class="px-5 py-14 md:py-20 fi">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag">Цена</div>
+            <h2 class="h mb-4" style="font-size:clamp(32px,6vw,62px)">Честно и просто.</h2>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-7" style="background:var(--green-light);border:1px solid rgba(22,163,74,.25)">
+                <svg class="w-4 h-4 text-[var(--green-btn)]" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18.75a.75.75 0 0 0 .75-.75V8.25a.75.75 0 0 0-.75-.75H3.375a.75.75 0 0 0-.75.75v2.25c0 .414.336.75.75.75Z"/></svg>
+                <span class="text-sm font-bold text-[var(--green-btn)]">Первый урок — бесплатно</span>
+            </div>
+            <div class="bg-white border rounded-3xl p-7 md:p-12 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-14 shadow-sm" style="border-color:rgba(22,163,74,.25)">
+                <div class="shrink-0">
+                    <div class="font-black text-[var(--green-btn)] leading-none mb-1" style="font-size:clamp(52px,8vw,86px);font-family:'Poppins',sans-serif">1 000 <span class="text-[var(--muted)] font-light" style="font-size:.45em">₽</span></div>
+                    <div class="text-[var(--muted)] text-sm font-light">за одно занятие</div>
                 </div>
+                <div class="flex-1">
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-[var(--muted)] text-sm"><span class="text-[var(--green-btn)] font-bold">✓</span>Индивидуальное занятие с преподавателем</li>
+                        <li class="flex items-center gap-3 text-[var(--muted)] text-sm"><span class="text-[var(--green-btn)] font-bold">✓</span>Личный кабинет Buildin — расписание, конспекты, ДЗ</li>
+                        <li class="flex items-center gap-3 text-[var(--muted)] text-sm"><span class="text-[var(--green-btn)] font-bold">✓</span>Авторские материалы и тесты на Stepik</li>
+                        <li class="flex items-center gap-3 text-[var(--muted)] text-sm"><span class="text-[var(--green-btn)] font-bold">✓</span>VK-бот с напоминаниями за 20 мин до урока</li>
+                        <li class="flex items-center gap-3 text-[var(--muted)] text-sm"><span class="text-[var(--green-btn)] font-bold">✓</span>Онлайн — по всей России</li>
+                    </ul>
+                </div>
+                <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g w-full md:w-auto px-9 py-4 text-base whitespace-nowrap">Начать занятия</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="div-line"></div>
+
+        <!-- ═══ REFERRAL ═══ -->
+    <section class="px-5 py-14 md:py-20 fi" style="background:linear-gradient(135deg,#EDF7EC 0%,#EFF5FF 100%)">
+        <div class="max-w-5xl mx-auto">
+            <div class="stag stag-g">Реферальная программа</div>
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-7 mb-8">
+                <div class="max-w-xl">
+                    <h2 class="h mb-4" style="font-size:clamp(28px,5.5vw,58px)">Приведите друга —<br>получите <span style="color:var(--green-btn)">1 000 ₽.</span></h2>
+                    <p class="text-[var(--muted)] text-base font-light leading-relaxed">Расскажите о LGG другу. Он запишется и позанимается 3 урока — вы получаете тысячу прямо на карту. Количество друзей не ограничено.</p>
+                </div>
+                <div class="shrink-0 bg-white border border-[var(--border)] rounded-2xl px-8 py-7 text-center shadow-sm">
+                    <div class="font-black text-[var(--green-btn)] leading-none" style="font-size:58px;font-family:'Poppins',sans-serif">1 000</div>
+                    <div class="text-[var(--muted)] text-sm font-medium mt-1">₽ на карту · за каждого</div>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4 mb-10">
+                <div class="bg-white border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+                    <div class="ref-num">1</div>
+                    <h3 class="font-bold text-base mb-2">Расскажите другу</h3>
+                    <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Поделитесь ссылкой — пусть друг узнает про LGG School.</p>
+                </div>
+                <div class="bg-white border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+                    <div class="ref-num">2</div>
+                    <h3 class="font-bold text-base mb-2">Друг занимается</h3>
+                    <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Друг записывается и проходит 3 урока с преподавателем.</p>
+                </div>
+                <div class="bg-white border rounded-2xl p-6 shadow-sm" style="border-color:rgba(22,163,74,.3)">
+                    <div class="ref-num hi">3</div>
+                    <h3 class="font-bold text-base mb-2 text-[var(--green-btn)]">Вы получаете деньги</h3>
+                    <p class="text-[var(--muted)] text-sm font-light leading-relaxed">Переводим 1 000 ₽ вам на карту сразу после 3-го урока.</p>
+                </div>
+            </div>
+            <div class="bg-white border border-[var(--border)] rounded-2xl p-5 md:p-6 shadow-sm max-w-2xl mx-auto">
+                <div class="text-sm font-bold mb-1 text-center md:text-left">Готовое приглашение для друга</div>
+                <p class="text-[var(--muted)] text-xs font-light mb-4 text-center md:text-left">Скопируйте текст со ссылками на сайт и сообщество — и просто вставьте в диалог с другом.</p>
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <button id="shareBtn" onclick="shareInvite()" class="btn-g flex-1 text-sm" aria-label="Скопировать приглашение со ссылками">Скопировать приглашение</button>
+                    <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-o flex-1 text-sm">Написать нам в ВК</a>
+                </div>
+                <p class="mt-3 text-xs text-[var(--faint)] text-center md:text-left">Каждый приведённый друг — ещё 1 000 ₽ на карту</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="div-line"></div>
+
+    <!-- ═══ FAQ ═══ -->
+    <section class="px-5 py-14 md:py-20 fi">
+        <div class="max-w-3xl mx-auto">
+            <div class="stag">Вопросы и ответы</div>
+            <h2 class="h mb-8" style="font-size:clamp(28px,5vw,54px)">Коротко о главном.</h2>
+            <div class="flex flex-col gap-3">
+                <details class="faq">
+                    <summary>Как проходят занятия?<span class="faq-ic" aria-hidden="true"></span></summary>
+                    <div class="faq-body">Онлайн и индивидуально — один на один с преподавателем по видеосвязи. Нужен только телефон или ноутбук, заниматься можно из любого города России.</div>
+                </details>
+                <details class="faq">
+                    <summary>Сколько стоит и как оплачивать?<span class="faq-ic" aria-hidden="true"></span></summary>
+                    <div class="faq-body">Одно занятие — 1 000 ₽, первый урок бесплатный. Без абонементов, договоров и предоплат: вы платите только за проведённые уроки.</div>
+                </details>
+                <details class="faq">
+                    <summary>С какими классами вы работаете?<span class="faq-ic" aria-hidden="true"></span></summary>
+                    <div class="faq-body">5–8 класс по школьной программе, подготовка к ОГЭ (9 класс) и ЕГЭ (10–11 класс), пересдача экзаменов, а также первый курс математических специальностей вуза.</div>
+                </details>
+                <details class="faq">
+                    <summary>Что входит, кроме самих уроков?<span class="faq-ic" aria-hidden="true"></span></summary>
+                    <div class="faq-body">Личный кабинет с расписанием, конспектами и домашними заданиями, авторские материалы и тесты с проверкой, а также бот-напоминания за 20 минут до занятия.</div>
+                </details>
+                <details class="faq">
+                    <summary>Как записаться на первый урок?<span class="faq-ic" aria-hidden="true"></span></summary>
+                    <div class="faq-body">Напишите нам в ВК — подберём преподавателя и удобное время. Первое занятие бесплатное, чтобы вы могли спокойно всё попробовать.</div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FINAL CTA ═══ -->
+    <section class="px-5 py-16 md:py-28 fi" style="background:linear-gradient(180deg,var(--bg) 0%,#EDF7EC 100%)">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="h mb-4" style="font-size:clamp(40px,8vw,86px)">Готовы начать?</h2>
+            <p class="text-[var(--muted)] text-lg font-light mb-9">Напишите нам в ВК — ответим быстро и подберём удобное время.</p>
+            <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g text-lg px-12 py-5">Записаться в ВК →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="px-5 pt-8 pb-28 md:pb-12 border-t border-[var(--border)]">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+            <span class="font-black text-lg tracking-widest" style="font-family:'Poppins',sans-serif">LGG<span style="color:var(--blue)">.</span></span>
+            <span class="text-[var(--faint)] text-sm">© 2026 LGG School · Математика онлайн</span>
+            <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener" class="text-[var(--muted)] text-sm">ВК сообщество →</a>
+        </div>
+    </footer>
+
+</div><!-- /#page -->
+
+<!-- Float bar -->
+<div class="fbar">
+    <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-6 py-3 text-sm">Записаться</a>
+    <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener" class="btn-o px-5 py-3 text-sm">ВК</a>
+</div>
+
+<!-- ════════════════════════
+     OVERLAYS — light theme
+════════════════════════ -->
+
+<!-- Buildin -->
+<div id="buildin" class="overlay">
+    <div class="max-w-5xl mx-auto px-5 pt-4 md:pt-8">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('buildin')" class="ov-close">✕ Закрыть</button>
+        <h2 class="h mb-8" style="font-size:clamp(30px,6vw,64px)">Личный кабинет Buildin</h2>
+        <div class="space-y-16 md:space-y-24">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag stag-g">Шаг 01</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Полный контроль расписания</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Темы, даты, оценки и комментарии преподавателя прямо в таблице. Никаких вопросов «а что мне задали».</p></div>
+                <div class="mockup"><img src="img/LK1.png" alt="Расписание" loading="lazy" decoding="async" width="1400" height="707"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="md:order-2"><div class="stag stag-g">Шаг 02</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Навигация без мусора</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Актуальное ДЗ помечено лампочкой. Конспекты и записи уроков лежат по полочкам.</p></div>
+                <div class="mockup md:order-1"><img src="img/LK2.png" alt="ДЗ" loading="lazy" decoding="async" width="1400" height="887"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag stag-g">Шаг 03</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Сдача ДЗ в два клика</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Решение из тетради можно сфотографировать и загрузить — преподаватель сразу видит работу.</p></div>
+                <div class="mockup"><img src="img/LK3.png" alt="Загрузка ДЗ" loading="lazy" decoding="async" width="1400" height="704"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="vk" class="overlay">
-        <div class="max-w-6xl mx-auto px-4 md:px-6 pt-4 md:pt-8">
-            <div class="swipe-indicator"></div>
-            <button onclick="closeOverlay('vk')" class="sticky top-4 md:top-6 z-50 text-gray-400 hover:text-white text-xs md:text-sm font-semibold mb-8 md:mb-12 flex items-center gap-2 transition-colors px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 w-max shadow-lg">
-                ✕ Закрыть
-            </button>
-            <h2 class="text-4xl md:text-7xl font-black mb-12 md:mb-20 text-gradient tracking-tighter">Комьюнити и Файлы</h2>
-
-            <div class="space-y-20 md:space-y-32">
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div>
-                        <div class="text-gray-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Доверие</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Реальные<br>отзывы</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Рейтинг 5.0, живые отзывы учеников и полная прозрачность нашей работы.</p>
-                    </div>
-                    <div class="mobile-mockup-frame">
-                        <img src="img/soobshestvo_main.png" alt="Главная страница ВК" loading="lazy">
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div class="md:order-2">
-                        <div class="text-gray-400 font-bold tracking-widest uppercase text-xs md:text-sm mb-3 md:mb-4">Польза</div>
-                        <h3 class="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Качественная<br>база файлов</h3>
-                        <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed">Мы сами делаем красивые файлы с теорией и материалами для ОГЭ/ЕГЭ и 5-8 классов. Заходи, скачивай, пользуйся.</p>
-                    </div>
-                    <div class="mobile-mockup-frame md:order-1">
-                        <img src="img/kanal_vk.png" alt="Файлы ВК" loading="lazy">
-                    </div>
-                </div>
-
-                <div class="flex justify-center mt-12 md:mt-16 pb-12">
-                    <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener noreferrer" class="px-8 md:px-12 py-4 md:py-5 bg-white text-black font-bold rounded-full hover:bg-gray-200 hover:scale-105 transition-all shadow-xl text-center w-full md:w-auto">
-                        Перейти в сообщество
-                    </a>
-                </div>
+<!-- Stepik -->
+<div id="stepik" class="overlay">
+    <div class="max-w-5xl mx-auto px-5 pt-4 md:pt-8">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('stepik')" class="ov-close">✕ Закрыть</button>
+        <h2 class="h mb-8" style="font-size:clamp(30px,6vw,64px)">Теория и Практика</h2>
+        <div class="space-y-16 md:space-y-24">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag" style="color:var(--blue)">Шаг 01 · Buildin</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Справочные материалы</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Вся теория по классам (с 6 по 10) собрана в удобные каталоги. Достаточно открыть нужную плитку и прочитать готовую выжимку правил.</p></div>
+                <div class="mockup"><img src="img/materials_6kl.png" alt="Материалы" loading="lazy" decoding="async" width="1400" height="791"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="md:order-2"><div class="stag" style="color:var(--blue)">Шаг 02 · Интеграция</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Переход к тестированию</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Изучили теорию — сразу закрепляете. Из Buildin переход в Stepik, где виден прогресс в цифрах.</p></div>
+                <div class="mockup md:order-1"><img src="img/materials_main.png" alt="Переход" loading="lazy" decoding="async" width="1400" height="796"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag" style="color:var(--blue)">Шаг 03 · Stepik</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Практика до автоматизма</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Интерактивные тесты решаются с телефона или компьютера. Мгновенная проверка от системы.</p></div>
+                <div class="mockup"><img src="img/testirovania_v_LK.png" alt="Тест" loading="lazy" decoding="async" width="1400" height="727"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="md:order-2"><div class="stag" style="color:var(--blue)">Шаг 04 · Stepik</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Структура курса</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Модульное разделение тем. Виден каждый шаг и количество баллов.</p></div>
+                <div class="mockup md:order-1"><img src="img/stepik.png" alt="Курс" loading="lazy" decoding="async" width="1400" height="1190"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag" style="color:var(--blue)">Шаг 05 · Stepik</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Интерфейс заданий</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Понятный интерфейс для решения задач. Ввод ответа и мгновенная обратная связь.</p></div>
+                <div class="mockup"><img src="img/stepik_primer_testa.png" alt="Задание" loading="lazy" decoding="async" width="1400" height="852"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Анимация появления элементов
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+<!-- Bot -->
+<div id="bot" class="overlay">
+    <div class="max-w-5xl mx-auto px-5 pt-4 md:pt-8">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('bot')" class="ov-close">✕ Закрыть</button>
+        <h2 class="h mb-8" style="font-size:clamp(30px,6vw,64px)">VK Бот-ассистент</h2>
+        <div class="space-y-16 md:space-y-24">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag" style="color:#3B82F6">Навигация</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Главное меню</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Форматы, цены и связь — в удобном стартовом меню бота.</p></div>
+                <div class="pmockup"><img src="img/obzor.png" alt="Меню" loading="lazy" decoding="async" width="720" height="1361"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="md:order-2"><div class="stag" style="color:#3B82F6">Запись</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Автопилот в кармане</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Свободное время преподавателей — по кнопкам. Запись в один клик.</p></div>
+                <div class="pmockup md:order-1"><img src="img/svobodn_okna.png" alt="Запись" loading="lazy" decoding="async" width="720" height="1361"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag" style="color:#3B82F6">Уведомления</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Связь родитель–ребёнок</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Бот связывает аккаунты. Напоминание за 20 минут до урока приходит именно ребёнку.</p></div>
+                <div class="pmockup"><img src="img/moi_zapisi.png" alt="Записи" loading="lazy" decoding="async" width="720" height="1361"></div>
+            </div>
+            <div class="flex justify-center pb-6">
+                <a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Открыть диалог с ботом →</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // Открытие и закрытие шторок
-        function openOverlay(id) {
-            document.body.classList.add('overlay-open');
-            const overlay = document.getElementById(id);
-            setTimeout(() => {
-                overlay.classList.add('active');
-                overlay.scrollTop = 0; // Сброс скролла при открытии
-            }, 50);
+<!-- VK -->
+<div id="vk" class="overlay">
+    <div class="max-w-5xl mx-auto px-5 pt-4 md:pt-8">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('vk')" class="ov-close">✕ Закрыть</button>
+        <h2 class="h mb-8" style="font-size:clamp(30px,6vw,64px)">Комьюнити и Файлы</h2>
+        <div class="space-y-16 md:space-y-24">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div><div class="stag">Доверие</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Реальные отзывы</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Рейтинг 5.0, живые отзывы учеников и полная прозрачность нашей работы.</p></div>
+                <div class="pmockup"><img src="img/soobshestvo_main.png" alt="ВК сообщество" loading="lazy" decoding="async" width="720" height="1361"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="md:order-2"><div class="stag">Польза</div><h3 class="h text-2xl md:text-3xl mb-3 leading-snug">Качественная база файлов</h3><p class="text-[var(--muted)] text-base font-light leading-relaxed">Аккуратные файлы с теорией и материалами для ОГЭ/ЕГЭ и 5–8 классов — заходите, скачивайте, пользуйтесь.</p></div>
+                <div class="pmockup md:order-1"><img src="img/kanal_vk.png" alt="Файлы" loading="lazy" decoding="async" width="720" height="1361"></div>
+            </div>
+            <div class="flex justify-center pb-6">
+                <a href="https://vk.com/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Перейти в сообщество →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════
+     PLAN OVERLAYS
+════════════════════════ -->
+
+<!-- 5–8 класс программа -->
+<div id="p58full" class="overlay">
+    <div class="max-w-3xl mx-auto px-5 pt-4 md:pt-8 pb-20">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('p58full')" class="ov-close">✕ Закрыть</button>
+        <div class="stag stag-g">5–8 класс · Школьная программа</div>
+        <h2 class="h mb-2" style="font-size:clamp(28px,5vw,56px)">Программа 5–8 класса</h2>
+        <p class="text-[var(--muted)] text-base font-light mb-8">Занимаемся по школьной программе и параллельно закрываем пробелы — чтобы оценка росла, а математика стала понятной.</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="card p-6"><div class="text-base font-bold mb-3">Алгебра</div><ul class="space-y-1.5"><li class="text-xs text-[var(--muted)] font-light">· Уравнения и неравенства по программе</li><li class="text-xs text-[var(--muted)] font-light">· Дроби, степени, функции</li><li class="text-xs text-[var(--muted)] font-light">· Разбор типичных ошибок</li></ul></div>
+            <div class="card p-6"><div class="text-base font-bold mb-3">Геометрия</div><ul class="space-y-1.5"><li class="text-xs text-[var(--muted)] font-light">· Планиметрия по классам</li><li class="text-xs text-[var(--muted)] font-light">· Теоремы и задачи на вычисление</li><li class="text-xs text-[var(--muted)] font-light">· Доказательства и чертежи</li></ul></div>
+            <div class="card p-6"><div class="text-base font-bold mb-3">Контрольные и самостоятельные</div><ul class="space-y-1.5"><li class="text-xs text-[var(--muted)] font-light">· Подготовка перед проверкой</li><li class="text-xs text-[var(--muted)] font-light">· Разбор ошибок после</li><li class="text-xs text-[var(--muted)] font-light">· Оценка растёт за 1–2 месяца</li></ul></div>
+            <div class="card p-6"><div class="text-base font-bold mb-3">Личный темп</div><ul class="space-y-1.5"><li class="text-xs text-[var(--muted)] font-light">· Программа под уровень ученика</li><li class="text-xs text-[var(--muted)] font-light">· Закрываем пробелы прицельно</li><li class="text-xs text-[var(--muted)] font-light">· Без гонки — главное понять</li></ul></div>
+        </div>
+        <div class="mt-6 text-center"><a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Записаться на занятия →</a></div>
+    </div>
+</div>
+
+<!-- ОГЭ подробная программа -->
+<div id="poge" class="overlay">
+    <div class="max-w-4xl mx-auto px-5 pt-4 md:pt-8 pb-20">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('poge')" class="ov-close">✕ Закрыть</button>
+        <div class="stag stag-g">9 класс · ОГЭ</div>
+        <h2 class="h mb-2" style="font-size:clamp(28px,5vw,56px)">Программа по месяцам</h2>
+        <p class="text-[var(--muted)] text-base font-light mb-8">Сентябрь — Май. Конкретные задания и темы каждый месяц.</p>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Сентябрь</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра</p><p class="text-xs text-[var(--muted)] font-light">Зад. 6, 7, 8 — дроби, степени, корни, числовая прямая</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Теория вероятностей</p><p class="text-xs text-[var(--muted)] font-light">Зад. 10</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия</p><p class="text-xs text-[var(--muted)] font-light">Зад. 15 — базовые свойства треугольников</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Октябрь</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра</p><p class="text-xs text-[var(--muted)] font-light">Зад. 9, 12 — уравнения и расчёты по формулам</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Практика</p><p class="text-xs text-[var(--muted)] font-light">Зад. 1–5 — лёгкие типы: квартиры, участки</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия</p><p class="text-xs text-[var(--muted)] font-light">Зад. 15 — четырёхугольники, теорема Пифагора</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Ноябрь</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра</p><p class="text-xs text-[var(--muted)] font-light">Зад. 11 — графики: параболы, гиперболы, прямые</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра</p><p class="text-xs text-[var(--muted)] font-light">Зад. 13 — линейные неравенства</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия</p><p class="text-xs text-[var(--muted)] font-light">Зад. 17, 18 — площади фигур, клетчатая бумага</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Декабрь</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра</p><p class="text-xs text-[var(--muted)] font-light">Зад. 13 — квадратные неравенства</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра</p><p class="text-xs text-[var(--muted)] font-light">Зад. 14 — арифм. и геом. прогрессии</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия</p><p class="text-xs text-[var(--muted)] font-light">Зад. 16, 19 — окружности, анализ утверждений</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Январь</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Практика</p><p class="text-xs text-[var(--muted)] font-light">Зад. 1–5 — сложные типы: шины, печи</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра ч.2</p><p class="text-xs text-[var(--muted)] font-light">Зад. 20 — сложные уравнения, системы, неравенства</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Февраль</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра ч.2</p><p class="text-xs text-[var(--muted)] font-light">Зад. 21 — текстовые задачи: движение, работа, сплавы</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия ч.2</p><p class="text-xs text-[var(--muted)] font-light">Зад. 23 — вычислит. геометрия: углы, подобие</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Март</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Алгебра ч.2</p><p class="text-xs text-[var(--muted)] font-light">Зад. 22 — построение графиков и параметры</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия ч.2</p><p class="text-xs text-[var(--muted)] font-light">Зад. 24 — геометрические доказательства</p></div></div></div>
+            <div class="card p-5"><div class="text-sm font-bold mb-3">Апрель</div><div class="space-y-3"><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Геометрия ч.2</p><p class="text-xs text-[var(--muted)] font-light">Зад. 25 — сложнейшие геометрические конструкции</p></div><div><p class="text-[10px] font-bold uppercase tracking-wide mb-1" style="color:var(--green-btn)">Повторение</p><p class="text-xs text-[var(--muted)] font-light">Интенсивный прогон всей первой части</p></div></div></div>
+            <div class="card p-5" style="border-color:rgba(22,163,74,.35)"><div class="text-sm font-bold mb-3 text-[var(--green-btn)]">Май · Финал</div><div class="space-y-2"><p class="text-xs text-[var(--muted)] font-light">Полные варианты ОГЭ на время</p><p class="text-xs text-[var(--muted)] font-light">Оформление ч.2 по критериям экспертов</p></div></div>
+        </div>
+        <div class="mt-6 text-center"><a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Записаться на ОГЭ →</a></div>
+    </div>
+</div>
+
+<!-- 10 класс летняя программа -->
+<div id="p10full" class="overlay">
+    <div class="max-w-3xl mx-auto px-5 pt-4 md:pt-8 pb-20">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('p10full')" class="ov-close">✕ Закрыть</button>
+        <div class="stag" style="color:var(--blue)">10 класс · Лето 2026</div>
+        <h2 class="h mb-2" style="font-size:clamp(28px,5vw,56px)">Летняя программа</h2>
+        <p class="text-[var(--muted)] text-base font-light mb-8">Старт подготовки к ЕГЭ. Гарантирует <strong class="text-[var(--text)]">46 баллов</strong> — и это только за лето.</p>
+        <div class="space-y-3">
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">1</div><div><div class="text-sm font-bold mb-2">Задание №6 — "Простейшие уравнения"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Рациональные уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Иррациональные уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Показательные уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Логарифмические уравнения (совместно с изучением логарифмов)</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">2</div><div><div class="text-sm font-bold mb-2">Задание №7 — "Вычисления и преобразования"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Преобразования числовых и алгебраических рациональных выражений</li><li class="text-xs text-[var(--muted)] font-light">· Вычисление значений степенных выражений, действия со степенями</li><li class="text-xs text-[var(--muted)] font-light">· Преобразования числовых и буквенных иррациональных выражений</li><li class="text-xs text-[var(--muted)] font-light">· Преобразования числовых и буквенных логарифмических выражений</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">3</div><div><div class="text-sm font-bold mb-2">Задание №2 — "Векторы"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Векторы и операции с ними</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">4</div><div><div class="text-sm font-bold mb-2">Задание №4 — "Начала теории вероятностей"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Классическое определение вероятности</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">5</div><div><div class="text-sm font-bold mb-2">Задание №9 — "Задачи с прикладным содержанием"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Линейные и квадратные уравнения/неравенства</li><li class="text-xs text-[var(--muted)] font-light">· Рациональные уравнения и неравенства</li><li class="text-xs text-[var(--muted)] font-light">· Иррациональные уравнения и неравенства</li><li class="text-xs text-[var(--muted)] font-light">· Показательные и логарифмические уравнения/неравенства</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">6</div><div><div class="text-sm font-bold mb-2">Задание №10 — "Текстовые задачи"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Задачи на проценты, сплавы и смеси</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на движение по прямой, окружности и воде</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на совместную работу</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на прогрессии</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">7</div><div><div class="text-sm font-bold mb-2">Задание №12 — "Анализ графиков"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Прямая, парабола, гипербола</li><li class="text-xs text-[var(--muted)] font-light">· Логарифмические и показательные функции</li><li class="text-xs text-[var(--muted)] font-light">· Иррациональные функции</li><li class="text-xs text-[var(--muted)] font-light">· Тригонометрические функции</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">8</div><div><div class="text-sm font-bold mb-2">Задание №1 — "Планиметрия (база)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Прямоугольный, равнобедренный, общий треугольник</li><li class="text-xs text-[var(--muted)] font-light">· Квадрат, прямоугольник, параллелограмм, ромб, трапеция</li><li class="text-xs text-[var(--muted)] font-light">· Центральные и вписанные углы</li><li class="text-xs text-[var(--muted)] font-light">· Окружность, касательная, хорда, секущая</li><li class="text-xs text-[var(--muted)] font-light">· Вписанные и описанные окружности</li></ul></div></div></div>
+        </div>
+        <div class="mt-6 text-center"><a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Записаться на подготовку →</a></div>
+    </div>
+</div>
+
+<!-- 11 класс полная программа ЕГЭ -->
+<div id="p11full" class="overlay">
+    <div class="max-w-3xl mx-auto px-5 pt-4 md:pt-8 pb-20">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('p11full')" class="ov-close">✕ Закрыть</button>
+        <div class="stag" style="color:var(--blue)">11 класс · ЕГЭ · 2026–2027</div>
+        <h2 class="h mb-2" style="font-size:clamp(28px,5vw,56px)">Полная программа ЕГЭ</h2>
+        <p class="text-[var(--muted)] text-base font-light mb-8">15 блоков — от базовой части до олимпиадных задач второй части.</p>
+        <div class="space-y-3">
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">1</div><div><div class="text-sm font-bold mb-2">Задания №6 и №7 — "Уравнения, вычисления и преобразования"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Рациональные и иррациональные выражения и уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Показательные и логарифмические выражения и уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Тригонометрические вычисления и уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Действия со степенями</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">2</div><div><div class="text-sm font-bold mb-2">Задания №9 и №10 — "Прикладные и текстовые задачи"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Подстановка значений в формулы</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на проценты, сплавы и смеси</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на движение по прямой, окружности и воде</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на совместную работу и прогрессии</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">3</div><div><div class="text-sm font-bold mb-2">Задания №4 и №5 — "Теория вероятностей"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Классическое определение вероятности</li><li class="text-xs text-[var(--muted)] font-light">· Теоремы о вероятностях событий (сложение и умножение)</li><li class="text-xs text-[var(--muted)] font-light">· Дерево вероятностей и формула Бернулли</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">4</div><div><div class="text-sm font-bold mb-2">Задание №1 — "Планиметрия (база)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Прямоугольный, равнобедренный, общий треугольник</li><li class="text-xs text-[var(--muted)] font-light">· Квадрат, прямоугольник, параллелограмм, ромб, трапеция</li><li class="text-xs text-[var(--muted)] font-light">· Центральные и вписанные углы, окружности</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">5</div><div><div class="text-sm font-bold mb-2">Задание №2 — "Векторы"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Векторы и операции с ними</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">6</div><div><div class="text-sm font-bold mb-2">Задание №11 — "Анализ графиков"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Прямая, парабола, гипербола</li><li class="text-xs text-[var(--muted)] font-light">· Логарифмические, показательные, иррациональные функции</li><li class="text-xs text-[var(--muted)] font-light">· Тригонометрические функции</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">7</div><div><div class="text-sm font-bold mb-2">Задания №8 и №12 — "Производная и первообразная"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Физический и геометрический смысл производной</li><li class="text-xs text-[var(--muted)] font-light">· Анализ графиков функции и производной</li><li class="text-xs text-[var(--muted)] font-light">· Поиск точек максимума и минимума</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">8</div><div><div class="text-sm font-bold mb-2">Задание №3 — "Стереометрия (база)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Многогранники (призмы, параллелепипеды, пирамиды)</li><li class="text-xs text-[var(--muted)] font-light">· Тела вращения (цилиндр, конус, шар)</li><li class="text-xs text-[var(--muted)] font-light">· Вычисление площадей поверхностей и объёмов</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">9</div><div><div class="text-sm font-bold mb-2">Задание №13 — "Уравнения (вторая часть)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Тригонометрический круг и формулы приведения</li><li class="text-xs text-[var(--muted)] font-light">· Решение тригонометрических уравнений</li><li class="text-xs text-[var(--muted)] font-light">· Отбор корней на заданном промежутке</li><li class="text-xs text-[var(--muted)] font-light">· Смешанные уравнения</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">10</div><div><div class="text-sm font-bold mb-2">Задание №15 — "Неравенства (вторая часть)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Метод интервалов для рациональных неравенств</li><li class="text-xs text-[var(--muted)] font-light">· Показательные и логарифмические неравенства</li><li class="text-xs text-[var(--muted)] font-light">· Метод рационализации (замены множителей)</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">11</div><div><div class="text-sm font-bold mb-2">Задание №16 — "Финансовая математика"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Кредиты с аннуитетными платежами</li><li class="text-xs text-[var(--muted)] font-light">· Кредиты с дифференцированными платежами</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на вклады и оптимизацию</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">12</div><div><div class="text-sm font-bold mb-2">Задание №17 — "Планиметрия (вторая часть)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Доказательства геометрических фактов</li><li class="text-xs text-[var(--muted)] font-light">· Свойства биссектрис, медиан, высот в сложных фигурах</li><li class="text-xs text-[var(--muted)] font-light">· Сложные задачи на вычисление</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">13</div><div><div class="text-sm font-bold mb-2">Задание №14 — "Стереометрия (вторая часть)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Построение сечений многогранников</li><li class="text-xs text-[var(--muted)] font-light">· Координатно-векторный метод</li><li class="text-xs text-[var(--muted)] font-light">· Углы и расстояния в пространстве</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">14</div><div><div class="text-sm font-bold mb-2">Задание №18 — "Задачи с параметром"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Аналитический метод решения</li><li class="text-xs text-[var(--muted)] font-light">· Графический метод (окружность, пучок прямых)</li><li class="text-xs text-[var(--muted)] font-light">· Использование свойств функций</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">15</div><div><div class="text-sm font-bold mb-2">Задание №19 — "Числа и их свойства (Олимпиада)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Признаки делимости и остатки</li><li class="text-xs text-[var(--muted)] font-light">· Метод «Оценка + Пример»</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на последовательности и прогрессии</li></ul></div></div></div>
+        </div>
+        <div class="mt-6 text-center"><a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Записаться на ЕГЭ →</a></div>
+    </div>
+</div>
+
+<!-- Пересдача — экстренный курс 1 месяц -->
+<div id="pretakefull" class="overlay">
+    <div class="max-w-3xl mx-auto px-5 pt-4 md:pt-8 pb-20">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('pretakefull')" class="ov-close">✕ Закрыть</button>
+        <div class="stag" style="color:#B45309">Пересдача · Экстренный курс · 2026</div>
+        <h2 class="h mb-2" style="font-size:clamp(28px,5vw,56px)">Программа за 1 месяц</h2>
+        <p class="text-[var(--muted)] text-base font-light mb-8">9 блоков — прицельно по заданиям, которые дают максимум баллов за минимальное время.</p>
+        <div class="space-y-3">
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">1</div><div><div class="text-sm font-bold mb-2">Задание №6 — "Простейшие уравнения"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Линейные и квадратные уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Простые показательные уравнения</li><li class="text-xs text-[var(--muted)] font-light">· Простые логарифмические уравнения</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">2</div><div><div class="text-sm font-bold mb-2">Задание №7 — "Вычисления и преобразования"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Свойства степеней и корней</li><li class="text-xs text-[var(--muted)] font-light">· Базовые преобразования алгебраических дробей</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">3</div><div><div class="text-sm font-bold mb-2">Задание №2 — "Векторы"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Координаты вектора и его длина</li><li class="text-xs text-[var(--muted)] font-light">· Сложение, вычитание и скалярное произведение</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">4</div><div><div class="text-sm font-bold mb-2">Задание №4 — "Начала теории вероятностей"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Классическое определение вероятности</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">5</div><div><div class="text-sm font-bold mb-2">Задание №9 — "Задачи с прикладным содержанием"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Подстановка значений в линейные и квадратные формулы</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">6</div><div><div class="text-sm font-bold mb-2">Задание №8 — "Производная (графики)"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Геометрический смысл производной (счёт по клеточкам)</li><li class="text-xs text-[var(--muted)] font-light">· Связь графика функции и знака производной</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">7</div><div><div class="text-sm font-bold mb-2">Задание №12 — "Исследование функций с помощью производной"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Поиск точек экстремума по алгоритму</li><li class="text-xs text-[var(--muted)] font-light">· Вычисление наибольшего и наименьшего значения</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#FFFBEB;color:#B45309">8</div><div><div class="text-sm font-bold mb-2">Задание №10 — "Текстовые задачи"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Задачи на движение по прямой и воде</li><li class="text-xs text-[var(--muted)] font-light">· Задачи на совместную работу</li></ul></div></div></div>
+            <div class="card p-5" style="border-color:rgba(22,163,74,.3)"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--green-light);color:var(--green-btn)">9</div><div><div class="text-sm font-bold mb-2 text-[var(--green-btn)]">Задание №11 — "Анализ графиков"</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Прямая и парабола (поиск коэффициентов по узлам)</li></ul></div></div></div>
+        </div>
+        <div class="mt-6 text-center"><a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Записаться на пересдачу →</a></div>
+    </div>
+</div>
+
+<!-- 1 курс — Алгебра + Математический анализ -->
+<div id="puni" class="overlay">
+    <div class="max-w-3xl mx-auto px-5 pt-4 md:pt-8 pb-20">
+        <div class="swipeh"></div>
+        <button onclick="closeOv('puni')" class="ov-close">✕ Закрыть</button>
+        <div class="stag stag-g">1 курс · Математические специальности</div>
+        <h2 class="h mb-2" style="font-size:clamp(28px,5vw,56px)">Программа 1 курса</h2>
+        <p class="text-[var(--muted)] text-base font-light mb-8">Алгебра и Математический анализ — первый семестр.</p>
+
+        <div class="stag stag-g mb-3">Алгебра</div>
+        <div class="space-y-3 mb-8">
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--green-light);color:var(--green-btn)">1</div><div><div class="text-sm font-bold mb-2">Бинарные отношения на множестве</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Свойства и операции</li><li class="text-xs text-[var(--muted)] font-light">· Отображения: образ, прообраз, композиция, тождественные отображения</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--green-light);color:var(--green-btn)">2</div><div><div class="text-sm font-bold mb-2">Комплексные числа</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Операции: сложение, вычитание, умножение, деление, извлечение корня</li><li class="text-xs text-[var(--muted)] font-light">· Геометрическое представление</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--green-light);color:var(--green-btn)">3</div><div><div class="text-sm font-bold mb-2">Алгебра матриц</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Вычисление определителя, метод окаймляющих миноров</li><li class="text-xs text-[var(--muted)] font-light">· Метод Гаусса, метод Крамера</li><li class="text-xs text-[var(--muted)] font-light">· Определение ранга матрицы, линейная зависимость/независимость</li><li class="text-xs text-[var(--muted)] font-light">· Фундаментальная система решений, обратная и транспонированная матрицы</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--green-light);color:var(--green-btn)">4</div><div><div class="text-sm font-bold mb-2">Подстановки и перестановки</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Композиция подстановок/перестановок</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--green-light);color:var(--green-btn)">5</div><div><div class="text-sm font-bold mb-2">Многочлены</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Схема Горнера</li><li class="text-xs text-[var(--muted)] font-light">· Деление многочлена на многочлен с остатком</li><li class="text-xs text-[var(--muted)] font-light">· Алгоритм Евклида (НОД многочленов)</li></ul></div></div></div>
+        </div>
+
+        <div class="div-line my-6"></div>
+
+        <div class="stag mb-3" style="color:var(--blue)">Математический анализ</div>
+        <div class="space-y-3">
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">1</div><div><div class="text-sm font-bold mb-2">Метод математической индукции</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Универсальный метод доказательства: база (n=1) и переход от k к k+1. Следствие аксиомы индукции в системе Пеано.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">2</div><div><div class="text-sm font-bold mb-2">Исследование на ограниченность числовых последовательностей</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Последовательность ограничена, если все члены лежат в [−M, M]. Всякая сходящаяся последовательность ограничена, но не наоборот.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">3</div><div><div class="text-sm font-bold mb-2">Исследование на сходимость/расходимость</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Предел последовательности: члены xₙ неограниченно приближаются к a. Если конечного предела нет — последовательность расходится.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">4</div><div><div class="text-sm font-bold mb-2">Раскрытие неопределённостей в пределах</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Алгоритмы устранения неопределённостей ∞/∞, 0/0, ∞·∞: деление на старшую степень, сопряжённое, замечательные пределы.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">5</div><div><div class="text-sm font-bold mb-2">Вычисление пределов числовых последовательностей</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Свойства пределов, теорема о зажатой переменной, стандартные разложения для нахождения предельного значения при n→∞.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">6</div><div><div class="text-sm font-bold mb-2">Вычисление пределов функции</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Поведение f(x) при стремлении x к точке или бесконечности. Односторонние пределы и иерархия бесконечно больших.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">7</div><div><div class="text-sm font-bold mb-2">Исследование на непрерывность функции</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Функция непрерывна, если предел равен значению. Типы разрывов: устранимый, первого и второго рода. Теоремы Больцано-Коши, Вейерштрасса.</p></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">8</div><div><div class="text-sm font-bold mb-2">Дифференцирование</div><ul class="space-y-1"><li class="text-xs text-[var(--muted)] font-light">· Производные элементарных функций (таблица)</li><li class="text-xs text-[var(--muted)] font-light">· Производные сложных функций: (f(g(x)))′ = f′(g(x))·g′(x)</li></ul></div></div></div>
+            <div class="card p-5"><div class="flex gap-3 items-start"><div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:#EFF5FF;color:var(--blue)">9</div><div><div class="text-sm font-bold mb-2">Производные высших порядков</div><p class="text-xs text-[var(--muted)] font-light leading-relaxed">Последовательное дифференцирование (y″, y‴, …, y⁽ⁿ⁾). Физический смысл (ускорение) и формула Тейлора для аппроксимации функций.</p></div></div></div>
+        </div>
+        <div class="mt-6 text-center"><a href="https://vk.me/lggmathnn" target="_blank" rel="noopener" class="btn-g px-9 py-4">Записаться →</a></div>
+    </div>
+</div>
+
+<script>
+    // Fade-in — batch with rootMargin so it triggers earlier
+    const io = new IntersectionObserver(
+        entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } }),
+        { threshold: 0.06, rootMargin: '0px 0px -40px 0px' }
+    );
+    document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+    // Plan tabs
+    function switchPlan(id) {
+        document.querySelectorAll('.plan-body').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.plan-tab').forEach(el => el.classList.remove('active'));
+        document.getElementById('plan-' + id).classList.remove('hidden');
+        document.getElementById('tab-' + id).classList.add('active');
+    }
+
+    // Overlay open/close
+    function openOv(id) {
+        document.body.classList.add('ov-open');
+        const el = document.getElementById(id);
+        el.scrollTop = 0;
+        requestAnimationFrame(() => { requestAnimationFrame(() => { el.classList.add('active'); }); });
+    }
+    function closeOv(id) {
+        document.getElementById(id).classList.remove('active');
+        setTimeout(() => document.body.classList.remove('ov-open'), 320);
+    }
+
+    // Escape key to close overlay
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('.overlay.active').forEach(ov => closeOv(ov.id));
+    });
+
+    // Swipe-down to close on mobile
+    document.querySelectorAll('.overlay').forEach(ov => {
+        let sy = 0;
+        ov.addEventListener('touchstart', e => { if (ov.scrollTop === 0) sy = e.touches[0].clientY; }, { passive: true });
+        ov.addEventListener('touchmove', e => {
+            if (!sy) return;
+            if (e.touches[0].clientY - sy > 70 && ov.scrollTop <= 0) { closeOv(ov.id); sy = 0; }
+        }, { passive: true });
+        ov.addEventListener('touchend', () => { sy = 0; }, { passive: true });
+    });
+
+    // Share invite — copy ready-made message with links to clipboard
+    const INVITE_TEXT =
+        'Занимаюсь математикой в LGG School — онлайн-репетиторы из Лобачевского и ВШЭ, объясняют понятно. Первое занятие бесплатно.\n' +
+        'Сайт: https://www.lgg-school.ru/\n' +
+        'Запись и отзывы в ВК: https://vk.com/lggmathnn';
+
+    function shareInvite() {
+        const btn = document.getElementById('shareBtn');
+        const done = () => {
+            if (!btn) return;
+            const original = btn.textContent;
+            btn.textContent = 'Скопировано ✓';
+            btn.disabled = true;
+            setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
+        };
+        // Native share sheet on mobile if available
+        if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+            navigator.share({ title: 'LGG School', text: INVITE_TEXT }).catch(() => {});
+            return;
         }
-
-        function closeOverlay(id) {
-            document.getElementById(id).classList.remove('active');
-            setTimeout(() => {
-                document.body.classList.remove('overlay-open');
-            }, 300);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(INVITE_TEXT).then(done).catch(fallbackCopy);
+        } else {
+            fallbackCopy();
         }
-
-        // Swipe-to-close логика для мобильных устройств
-        const overlays = document.querySelectorAll('.overlay');
-        let startY = 0;
-
-        overlays.forEach(overlay => {
-            overlay.addEventListener('touchstart', e => {
-                // Если мы находимся в самом верху шторки
-                if (overlay.scrollTop === 0) {
-                    startY = e.touches[0].clientY;
-                }
-            }, {passive: true});
-
-            overlay.addEventListener('touchmove', e => {
-                if (startY === 0) return;
-                const currentY = e.touches[0].clientY;
-                const diff = currentY - startY;
-
-                // Если свайпнули вниз больше чем на 60px
-                if (diff > 60 && overlay.scrollTop <= 0) {
-                    closeOverlay(overlay.id);
-                    startY = 0; // Сбрасываем
-                }
-            }, {passive: true});
-
-            overlay.addEventListener('touchend', () => {
-                startY = 0; // Сбрасываем при отпускании пальца
-            });
-        });
-    </script>
+        function fallbackCopy() {
+            const ta = document.createElement('textarea');
+            ta.value = INVITE_TEXT;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) {}
+            document.body.removeChild(ta);
+        }
+    }
+</script>
 </body>
 </html>
