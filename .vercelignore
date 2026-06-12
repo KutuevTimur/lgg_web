@@ -1,5 +1,6 @@
 .claude
 resource
+tailwind.config.js
 CLAUDE.md
 MEMORY.md
 *.md
