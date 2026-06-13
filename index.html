@@ -16,6 +16,20 @@
     <meta property="og:locale" content="ru_RU">
     <meta property="og:image" content="https://www.lgg-school.ru/img/logo.png">
 
+    <!-- Structured data — помогает Google показывать правильное название и тему -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "LGG School",
+      "alternateName": "LGG School — Математика онлайн",
+      "url": "https://www.lgg-school.ru/",
+      "logo": "https://www.lgg-school.ru/img/logo.png",
+      "description": "Онлайн-репетиторы по математике — 5–8 класс, ОГЭ, ЕГЭ. Студенты Лобачевского и ВШЭ.",
+      "sameAs": ["https://vk.com/lggmathnn"]
+    }
+    </script>
+
     <!-- Self-hosted fonts — no Google CDN (works without VPN in RU) -->
     <link rel="preload" href="fonts/Inter-400-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/Inter-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -531,7 +545,7 @@
     <!-- ═══ ECOSYSTEM ═══ -->
     <section class="px-5 py-14 md:py-20 fi">
         <div class="max-w-5xl mx-auto">
-            <div class="stag">Экосистема</div>
+            <div class="stag">Наша экосистема</div>
             <h2 class="h mb-3" style="font-size:clamp(32px,6vw,62px)">Всё для учёбы —<br>в одном месте.</h2>
             <p class="text-[var(--muted)] text-lg font-light mb-8">Нажмите на карточку, чтобы изучить инструменты.</p>
 
