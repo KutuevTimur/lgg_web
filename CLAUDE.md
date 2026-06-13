@@ -28,7 +28,7 @@ resource/
 
 **Зависимости:**
 - Tailwind CSS — **предкомпилирован в статический CSS, встроен инлайном в `<head>`** (НЕ CDN!). Раньше был `cdn.tailwindcss.com`, но это runtime-JS-компилятор → давал FOUC (вспышку нестилизованной страницы) в медленных браузерах (ВК). Убрано.
-- Poppins + Inter — Google Fonts с preconnect
+- Poppins + Inter — **self-hosted** (НЕ Google Fonts!). Файлы woff2 в `fonts/`, `@font-face` инлайном в `<head>`, исходник в `fonts.css`. Раньше тянулись с `fonts.googleapis.com`/`fonts.gstatic.com`, которые **заблокированы в РФ без VPN** → страница висела на бесконечной загрузке. Убрано. ⚠️ Не возвращать Google Fonts. Перекачать при необходимости: `curl` css2 с браузерным UA → woff2 latin+cyrillic.
 
 **⚠️ Не возвращать `cdn.tailwindcss.com`** — вернётся FOUC. Если меняешь Tailwind-классы в `index.html`, пересобери инлайн-CSS:
 ```bash
@@ -37,7 +37,23 @@ npx tailwindcss@3 -c tailwind.config.js -i input.css -o out.css --minify
 ```
 (`tailwind.config.js` лежит в корне, `content: ['./index.html']`.)
 
-**Деплой:** Vercel (проект `kutuevtimurs-projects/lgg-web`), домен `www.lgg-school.ru`. GitHub `KutuevTimur/lgg_web` подключён — пуш в `main` авто-деплоит. Статика, build не нужен. `.vercelignore` прячет `resource/`, `.claude`, `*.md`, `tailwind.config.js`.
+**Хостинг (ВАЖНО — переехали с Vercel на свой сервер, июнь 2026):**
+
+Сайт раздаётся с **VPS Timeweb Cloud, IP `5.42.101.42`** (Ubuntu 24.04, nginx), а НЕ с Vercel.
+Причина переезда: **Vercel заблокирован в РФ** — кастомным доменам выдаётся IP из диапазона `76.76.21.x`, который режет Роскомнадзор. Без VPN сайт «не догружался». Свой российский IP открывается без VPN.
+
+- **Сервер:** `ssh root@5.42.101.42` (пароль был в чате — должен быть сменён).
+- **Корень сайта:** `/var/www/lgg_school/` (там `index.html`, `img/`, `fonts/`). Деплой = залить файлы туда (tar/scp), `chown www-data:www-data`, права 644/755. nginx reload не нужен (статика).
+- **nginx-конфиг:** `/etc/nginx/sites-available/lgg_school`. Блок `server_name lgg-school.ru www.lgg-school.ru`: `location /` → статика лендинга; `/teachers`, `/parent`, `/api/` → `proxy_pass 127.0.0.1:8000`. Кэш год для `/img/` и `/fonts/`.
+- **SSL:** Let's Encrypt (certbot), авто-продление (`certbot.timer`). Покрывает оба имени.
+- **DNS (панель Timeweb, NS timeweb):** A `lgg-school.ru` и A `www` → оба `5.42.101.42`. Vercel-записи (CNAME `cname.vercel-dns.com`, A `76.76.x`/`66.33.x`/`216.198.x`) удалены. MX/TXP (`*.timeweb.ru`) — почта, не трогать.
+- **На том же сервере:** VK-бот `vk_math_bot.service` (код `/root/VK_math_bot`, VK long-poll) — НЕ трогать. Отдельный FastAPI (`/var/www/lgg_school_api`, порт 8000, страницы `/teachers`/`/parent`/`/api`) сейчас **выключен** (502) — это пре-существующее, не связано с лендингом.
+
+**Vercel (legacy):** проект `kutuevtimurs-projects/lgg-web` ещё существует, GitHub `KutuevTimur/lgg_web` к нему подключён (пуш в `main` авто-деплоит на Vercel), но **домен туда больше не указывает**. GitHub остаётся источником кода. `.vercelignore`/`vercel.json` — legacy.
+
+**⚠️ ОТКРЫТЫЙ ВОПРОС (разобрать в след. сессии):** пользователь говорит, что **с VPN сайт грузится лучше/быстрее, чем без**, хотя сайт теперь на российском IP `5.42.101.42` и в РФ должен открываться нормально без VPN. Возможные причины для проверки: кэш DNS/браузера со старым Vercel-IP на устройстве; TTL старых записей; маршрутизация до Timeweb у конкретного провайдера; повторно проверить `dig` с устройства и реальную скорость отдачи ассетов с сервера. На момент записи: сервер отдаёт 200, SSL валиден, внешних запросов 0.
+
+**SEO:** Google в выдаче показывал `LGG School | Экосистема` (кэш старой версии + авто-переписка title). `<title>` и og:title = `LGG School | Математика онлайн`. Ярлык секции переименован `Экосистема`→`Наша экосистема`, добавлен JSON-LD. Для обновления — переиндексация в Google Search Console (ещё не настроена).
 
 **Предпросмотр:** открыть `index.html` прямо в браузере или использовать любой локальный HTTP-сервер:
 ```bash
